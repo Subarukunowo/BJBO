@@ -1,0 +1,11 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="1080dp"
+    android:height="240dp"
+    android:viewportWidth="1080"
+    android:viewportHeight="240">
+
+    <!-- Ombak dengan bentuk lebih lembut -->
+    <path
+        android:fillColor="#42A5F5"
+        android:pathData="M0,180 C270,120 810,240 1080,180 L1080,240 L0,240 Z" />
+</vector>

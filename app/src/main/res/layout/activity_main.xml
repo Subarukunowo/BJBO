@@ -1,0 +1,124 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.app.LoginViewModel" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFDE7">
+
+        <!-- Garis di kiri bawah -->
+        <View
+            android:layout_width="270dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="-50dp"
+            android:layout_marginTop="350dp"
+            android:background="@drawable/rounded_blue_line"
+            android:rotation="35" />
+
+        <!-- Garis Kecil -->
+        <View
+            android:layout_width="130dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="-59dp"
+            android:layout_marginTop="360dp"
+            android:background="@drawable/rounded_blue_line"
+            android:rotation="35" />
+
+        <!-- Garis di kanan atas -->
+        <View
+            android:layout_width="230dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="270dp"
+            android:layout_marginTop="280dp"
+            android:background="@drawable/rounded_blue_line"
+            android:rotation="30" />
+
+        <!-- Garis Kecil -->
+        <View
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="260dp"
+            android:layout_marginTop="300dp"
+            android:background="@drawable/rounded_blue_line"
+            android:rotation="35" />
+
+        <!-- LinearLayout untuk Konten -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Logo -->
+            <ImageView
+                android:id="@+id/logoImage"
+                android:layout_width="500dp"
+                android:layout_height="300dp"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="-200dp"
+                android:src="@drawable/logo" />
+
+            <!-- Email Input -->
+            <EditText
+                android:id="@+id/emailInput"
+                android:layout_width="270dp"
+                android:layout_height="48dp"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:padding="8dp"
+                android:textSize="14sp"
+                /> <!-- Data Binding -->
+
+            <!-- Password Input -->
+            <EditText
+                android:id="@+id/passwordInput"
+                android:layout_width="270dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/rounded_edit_text"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:padding="8dp"
+               />
+
+
+            <!-- Register Link -->
+            <TextView
+                android:id="@+id/registerText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="Registrasi jika belum punya akun!"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <!-- Login Button -->
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="#1E88E5"
+                android:text="Masuk"
+                android:textColor="#000"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                /> <!-- Data Binding -->
+        </LinearLayout>
+
+        <!-- Wave di Bawah -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:layout_gravity="bottom"
+            android:src="@drawable/wave_path"
+            android:scaleType="fitXY" />
+    </FrameLayout>
+</layout>
