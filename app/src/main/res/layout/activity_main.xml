@@ -5,7 +5,7 @@
             type="com.example.app.LoginViewModel" />
     </data>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#FFFDE7">
@@ -69,11 +69,10 @@
                 android:layout_width="270dp"
                 android:layout_height="48dp"
                 android:background="@drawable/rounded_edit_text"
-                android:hint="Email"
+                android:hint="@string/email_hint"
                 android:inputType="textEmailAddress"
                 android:padding="8dp"
-                android:textSize="14sp"
-                /> <!-- Data Binding -->
+                android:textSize="14sp" />
 
             <!-- Password Input -->
             <EditText
@@ -82,11 +81,10 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="30dp"
                 android:background="@drawable/rounded_edit_text"
-                android:hint="Password"
+                android:hint="@string/password_hint"
                 android:inputType="textPassword"
                 android:padding="8dp"
-               />
-
+                android:textSize="14sp" />
 
             <!-- Register Link -->
             <TextView
@@ -95,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:text="Registrasi jika belum punya akun!"
+                android:text="@string/register_text"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
@@ -106,19 +104,20 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="16dp"
                 android:backgroundTint="#1E88E5"
-                android:text="Masuk"
+                android:text="@string/login_button"
                 android:textColor="#000"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                /> <!-- Data Binding -->
+                android:textStyle="bold" />
         </LinearLayout>
 
         <!-- Wave di Bawah -->
         <ImageView
+            android:id="@+id/wavePath"
             android:layout_width="match_parent"
             android:layout_height="500dp"
             android:layout_gravity="bottom"
             android:src="@drawable/wave_path"
             android:scaleType="fitXY" />
+
     </FrameLayout>
 </layout>

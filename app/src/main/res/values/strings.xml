@@ -1,3 +1,21 @@
 <resources>
+    <!-- App Name -->
     <string name="app_name">BJBO</string>
+
+    <!-- Login Page Strings -->
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">Masuk</string>
+    <string name="register_text">Registrasi jika belum punya akun!</string>
+    <string name="login_success">Login berhasil!</string>
+    <string name="login_failure">Login gagal! Email atau Password salah.</string>
+
+    <!-- Home Page Strings -->
+    <string name="home_welcome">Selamat datang di aplikasi!</string>
+    <string name="logout_button">Keluar</string>
+
+    <!-- Shared Preferences Strings -->
+    <string name="shared_prefs_name">LoginPreferences</string>
+    <string name="is_logged_in">isLoggedIn</string>
+    
 </resources>

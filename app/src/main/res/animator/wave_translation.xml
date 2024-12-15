@@ -1,0 +1,12 @@
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="sequentially">
+
+    <!-- Gerakan ke kanan -->
+    <objectAnimator
+        android:propertyName="translationX"
+        android:duration="1500"
+        android:valueFrom="0"
+        android:valueTo="50dp"
+        android:repeatCount="infinite"
+        android:repeatMode="reverse" />
+</set>

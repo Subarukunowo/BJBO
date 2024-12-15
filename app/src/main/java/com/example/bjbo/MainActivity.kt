@@ -1,5 +1,6 @@
 package com.example.app
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -13,6 +14,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Animasi gelombang
 
         // Menghubungkan layout dengan ViewBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
