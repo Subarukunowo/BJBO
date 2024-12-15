@@ -14,14 +14,11 @@
         android:theme="@style/Theme.BJBO"
         tools:targetApi="31">
 
-        <activity android:name="com.example.app.MainActivity"
-        android:exported="true">
 
-        </activity>
-        <activity android:name="com.example.app.LoginActivity"
+        <activity android:name=".LoginActivity"
             android:exported="true"/>
-        <activity android:name="com.example.app.BerandaActivity"/>
-
+        <activity android:name=".BerandaActivity"/>
+<activity android:name=".RegisterActivity"/>
     </application>
 
 </manifest>

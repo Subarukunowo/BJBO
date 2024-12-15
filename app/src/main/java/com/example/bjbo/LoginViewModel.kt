@@ -1,4 +1,4 @@
-package com.example.app
+package com.example.bjbo
 
 import android.content.Context
 import androidx.lifecycle.LiveData

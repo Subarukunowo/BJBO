@@ -1,11 +1,11 @@
-package com.example.app
+package com.example.bjbo
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-
+import com.example.bjbo.BerandaActivity
 import com.example.bjbo.databinding.ActivityMainBinding
 
 class LoginActivity : AppCompatActivity() {
@@ -21,10 +21,14 @@ class LoginActivity : AppCompatActivity() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        // Tambahkan user 'sandybks7' dengan password '12345678' jika belum ada
         val dbHelper = DBHelper(this)
-        if (!dbHelper.checkLogin("sandybks7", "12345678")) {
-            dbHelper.addUser("sandybks7", "12345678")
+
+        // Menambahkan beberapa pengguna jika belum ada
+        addMultipleUsers(dbHelper)
+        binding.registerText.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
         // Observasi status login
@@ -36,7 +40,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        // Tombol untuk login
+        // Tombol login
         binding.loginButton.setOnClickListener {
             val email = binding.emailInput.text.toString()
             val password = binding.passwordInput.text.toString()
@@ -44,13 +48,38 @@ class LoginActivity : AppCompatActivity() {
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Mohon isi email dan password.", Toast.LENGTH_SHORT).show()
             } else {
-                viewModel.email.value = email
-                viewModel.password.value = password
-                viewModel.validateCredentials(this)
+                // Validasi kredensial menggunakan DBHelper
+                if (dbHelper.checkLogin(email, password)) {
+                    Toast.makeText(this, "Login berhasil untuk $email", Toast.LENGTH_SHORT).show()
+                    navigateToBeranda()
+                } else {
+                    Toast.makeText(this, "Login gagal! Email atau password salah.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
 
+    // Menambahkan beberapa pengguna secara default
+    private fun addMultipleUsers(dbHelper: DBHelper) {
+        val users = listOf(
+            Pair("dimas123@gmail", "dimas123"),
+            Pair("fikri12", "321fikri"),
+            Pair("sandybks7", "12345678")
+        )
+
+        for (user in users) {
+            if (!dbHelper.checkLogin(user.first, user.second)) {
+                val isAdded = dbHelper.addUser(user.first, user.second)
+                if (isAdded) {
+                    println("DEBUG: ${user.first} berhasil ditambahkan.")
+                } else {
+                    println("DEBUG: Gagal menambahkan ${user.first}.")
+                }
+            }
+        }
+    }
+
+    // Navigasi ke halaman Beranda
     private fun navigateToBeranda() {
         val intent = Intent(this, BerandaActivity::class.java)
         startActivity(intent)

@@ -1,4 +1,4 @@
-package com.example.app
+package com.example.bjbo
 
 import android.content.ContentValues
 import android.content.Context
@@ -10,11 +10,8 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
     companion object {
         private const val DATABASE_NAME = "bjbo.db"
         private const val DATABASE_VERSION = 1
-
-        // Nama tabel login
         private const val TABLE_LOGIN = "login"
 
-        // Query untuk membuat tabel login
         private const val CREATE_TABLE_LOGIN = """
             CREATE TABLE $TABLE_LOGIN (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,12 +22,12 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        // Membuat tabel login saat database pertama kali dibuat
+        // Membuat tabel login pertama kali saat database dibuat
         db?.execSQL(CREATE_TABLE_LOGIN)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        // Hapus tabel lama jika ada versi baru
+        // Menghapus tabel lama jika ada pembaruan versi
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_LOGIN")
         onCreate(db)
     }
@@ -38,15 +35,16 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
     // Menambahkan user baru ke database
     fun addUser(email: String, password: String): Boolean {
         val db = writableDatabase
-        val values = ContentValues()
-        values.put("email", email)
-        values.put("password", password)
+        val values = ContentValues().apply {
+            put("email", email)
+            put("password", password)
+        }
         val result = db.insert(TABLE_LOGIN, null, values)
         db.close()
         return result != -1L
     }
 
-    // Mengecek apakah user dengan email dan password tertentu ada di database
+    // Mengecek apakah user dengan email dan password ada di database
     fun checkLogin(email: String, password: String): Boolean {
         val db = readableDatabase
         val cursor = db.rawQuery(
@@ -57,5 +55,26 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         cursor.close()
         db.close()
         return exists
+    }
+
+    // Menampilkan semua pengguna (untuk debug)
+    fun logAllUsers() {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_LOGIN", null)
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+            val email = cursor.getString(cursor.getColumnIndexOrThrow("email"))
+            val password = cursor.getString(cursor.getColumnIndexOrThrow("password"))
+            println("DEBUG: User - ID: $id, Email: $email, Password: $password")
+        }
+        cursor.close()
+        db.close()
+    }
+
+    // Menghapus semua data di tabel login
+    fun clearTable() {
+        val db = writableDatabase
+        db.execSQL("DELETE FROM $TABLE_LOGIN")
+        db.close()
     }
 }

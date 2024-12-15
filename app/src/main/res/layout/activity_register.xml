@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:text="@string/register_text"
+                android:text="sudah punya akun? login"
                 android:textColor="#1E88E5"
                 android:textSize="14sp"
                 android:clickable="true"
@@ -101,12 +101,12 @@
 
             <!-- Login Button -->
             <Button
-                android:id="@+id/loginButton"
+                android:id="@+id/registerButton"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="16dp"
                 android:backgroundTint="#1E88E5"
-                android:text="@string/login_button"
+                android:text="Daftar"
                 android:textColor="#000"
                 android:textSize="14sp"
                 android:textStyle="bold" />

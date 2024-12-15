@@ -1,4 +1,4 @@
-package com.example.app
+package com.example.bjbo
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +13,6 @@ class BerandaActivity : AppCompatActivity() {
         binding = ActivityBerandaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.welcomeText.text = "Selamat datang di Beranda, sandybks7!"
+        binding.welcomeText.text = "Selamat datang di Beranda"
     }
 }
