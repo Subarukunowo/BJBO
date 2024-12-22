@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -17,7 +18,8 @@
 
         <activity android:name=".LoginActivity"
             android:exported="true"/>
-        <activity android:name=".BerandaActivity"/>
+        <activity android:name=".BerandaActivity"
+            android:exported="false"/>
 <activity android:name=".RegisterActivity"/>
     </application>
 
