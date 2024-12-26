@@ -10,50 +10,42 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.commit
-import com.example.bjbo.databinding.ActivityBerandaBinding
+import com.example.bjbo.databinding.ActivityExploreBinding
 import com.example.bjbo.fragment.ProdukBaruFragment
 
-class BerandaActivity : AppCompatActivity() {
+class ExploreActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityBerandaBinding
+    private lateinit var binding: ActivityExploreBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityBerandaBinding.inflate(layoutInflater)
+
+        // Inisialisasi ViewBinding
+        binding = ActivityExploreBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Tambahkan fragment ProdukBaruFragment
+        // Memuat ProdukBaruFragment ke dalam FrameLayout
         if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                replace(
-                    R.id.produkBaruFragmentContainer, // ID dari FrameLayout
-                    ProdukBaruFragment(), // Fragment yang akan ditampilkan
-                    ProdukBaruFragment::class.java.simpleName // Tag opsional
-                )
-            }
+            supportFragmentManager.beginTransaction()
+                .replace(binding.produkBaruFragmentContainer.id, ProdukBaruFragment())
+                .commit()
         }
 
-        // Tambahkan listener untuk ikon kamera
-        binding.ivCamera.setOnClickListener {
-            checkCameraPermission()
-        }
-
-        // Listener untuk bottom navigation
+        // Menambahkan listener untuk bottom navigation
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    // Tetap di Beranda
-                    true
-                }
-                R.id.nav_explore -> {
-                    // Navigasi ke ExploreActivity
-                    val intent = Intent(this, ExploreActivity::class.java)
+                    // Kembali ke Beranda
+                    val intent = Intent(this, BerandaActivity::class.java)
                     startActivity(intent)
                     true
                 }
+                R.id.nav_explore -> {
+                    // Tetap di Explore
+                    true
+                }
                 R.id.menu_camera -> {
-                    // Buka kamera
+                    // Periksa izin kamera sebelum membuka kamera
                     checkCameraPermission()
                     true
                 }
@@ -98,11 +90,10 @@ class BerandaActivity : AppCompatActivity() {
 
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
             val photo: Bitmap? = data?.extras?.get("data") as? Bitmap
-            if (photo != null) {
-                binding.profileImage.setImageBitmap(photo) // Menampilkan gambar di profileImage
-            } else {
-                Toast.makeText(this, "Gagal mengambil foto", Toast.LENGTH_SHORT).show()
-            }
+            // Lakukan sesuatu dengan foto (contoh: tampilkan di ImageView)
+            Toast.makeText(this, "Foto berhasil diambil", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Tidak ada foto yang diambil", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -116,7 +107,7 @@ class BerandaActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openCamera()
             } else {
-                Toast.makeText(this, "Izin kamera diperlukan untuk mengambil foto", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Izin kamera ditolak", Toast.LENGTH_SHORT).show()
             }
         }
     }
