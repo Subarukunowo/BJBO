@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFBEF"
+    tools:context=".JualActivity">
+
+    <!-- Header Section -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Tombol Kembali -->
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Kembali" />
+
+        <!-- Judul -->
+        <TextView
+            android:id="@+id/tvHeaderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Jual Produk"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
+    </LinearLayout>
+
+    <!-- Form Input -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toTopOf="@id/btnJualSekarang"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Tambah Gambar -->
+            <ImageView
+                android:id="@+id/btnTambahGambar"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/ic_add_photo"
+                android:contentDescription="Tambah Gambar"
+                android:scaleType="centerCrop"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Daftar Gambar -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvGambar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:padding="8dp" />
+
+            <!-- Input Judul -->
+            <EditText
+                android:id="@+id/etJudulProduk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Judul Produk"
+                android:padding="16dp"
+                android:background="@drawable/bg_input"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp" />
+
+            <!-- Input Deskripsi -->
+            <EditText
+                android:id="@+id/etDeskripsiProduk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Deskripsi Produk"
+                android:padding="16dp"
+                android:background="@drawable/bg_input"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:lines="5"
+                android:gravity="top" />
+
+            <!-- Input Harga -->
+            <EditText
+                android:id="@+id/etHargaProduk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Harga (Rp)"
+                android:padding="16dp"
+                android:background="@drawable/bg_input"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:inputType="number" />
+            <TextView
+                android:id="@+id/tvLokasiProduk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:padding="16dp"
+                android:background="@drawable/bg_input"
+            android:text="Lokasi Produk: Belum Dipilih"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:hint="Lokasi Produk"
+            android:gravity="center_vertical" />
+            <!-- Input Lokasi -->
+            <AutoCompleteTextView
+                android:id="@+id/etLokasiProduk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Cari lokasi"
+                android:padding="16dp"
+                android:background="@drawable/bg_input"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Tombol Jual -->
+    <Button
+        android:id="@+id/btnJualSekarang"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#008080"
+        android:text="Jual Sekarang"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

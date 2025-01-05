@@ -39,6 +39,14 @@ class BerandaActivity : AppCompatActivity() {
             checkCameraPermission()
         }
 
+        // Listener untuk tombol JUAL
+        binding.btnJual.setOnClickListener {
+            Toast.makeText(this, "Tombol JUAL diklik!", Toast.LENGTH_SHORT).show()
+            // Navigasi ke JualActivity
+            val intent = Intent(this, JualActivity::class.java)
+            startActivity(intent)
+        }
+
         // Listener untuk bottom navigation
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {

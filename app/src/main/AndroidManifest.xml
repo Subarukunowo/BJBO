@@ -9,7 +9,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET"/>
-
+    <meta-data
+        android:name="osmdroid.cache"
+        android:value="CACHE_DIR" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -29,6 +31,8 @@
 <activity android:name=".RegisterActivity"/>
         <activity android:name=".ExploreActivity" />
         <activity android:name=".DetailProductActivity"/>
+        <activity android:name=".JualActivity"/>
+        <activity android:name=".PilihLokasiActivity"/>
 
     </application>
 

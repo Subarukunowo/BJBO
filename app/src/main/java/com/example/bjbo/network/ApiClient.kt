@@ -1,4 +1,4 @@
-package com.example.bjbo.api
+package com.example.bjbo.network
 
 import com.example.bjbo.network.ApiService
 import retrofit2.Retrofit
@@ -18,4 +18,5 @@ object ApiClient {
     val instance: ApiService by lazy {
         retrofit.create(ApiService::class.java)
     }
+
 }

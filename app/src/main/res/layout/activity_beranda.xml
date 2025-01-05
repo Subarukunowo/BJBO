@@ -51,8 +51,41 @@
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_menu"
         android:contentDescription="Menu Icon"
+        
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Tombol JUAL -->
+    <LinearLayout
+        android:id="@+id/btnJual"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+
+        app:layout_constraintTop_toBottomOf="@id/menuIcon"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Ikon "+" -->
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_plus"
+            app:tint="#008080" />
+
+        <!-- Teks "JUAL" -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="JUAL"
+            android:textColor="#A9A9A9"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <!-- Search Bar -->
     <EditText

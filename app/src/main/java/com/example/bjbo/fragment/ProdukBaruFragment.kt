@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bjbo.BarangAdapter
 import com.example.bjbo.DetailProductActivity
-import com.example.bjbo.api.ApiClient
+import com.example.bjbo.network.ApiClient
 import com.example.bjbo.databinding.FragmentProdukBaruBinding
 import com.example.bjbo.model.Barang
 import retrofit2.Call
@@ -41,7 +41,7 @@ class ProdukBaruFragment : Fragment() {
         produkBaruAdapter = BarangAdapter(emptyList()) { barang ->
             // Klik item untuk membuka DetailProductActivity
             val intent = Intent(requireContext(), DetailProductActivity::class.java)
-            intent.putExtra("PRODUCT_ID", barang.id) // Mengirim ID produk
+            intent.putExtra("ID_BARANG", barang.id_barang) // Mengirimkan id_barang
             startActivity(intent)
         }
 

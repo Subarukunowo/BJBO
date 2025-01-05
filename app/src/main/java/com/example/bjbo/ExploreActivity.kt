@@ -31,6 +31,9 @@ class ExploreActivity : AppCompatActivity() {
                 .commit()
         }
 
+        // Menyetel item yang aktif di BottomNavigationView
+        binding.bottomNavigation.selectedItemId = R.id.nav_explore
+
         // Menambahkan listener untuk bottom navigation
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -38,6 +41,7 @@ class ExploreActivity : AppCompatActivity() {
                     // Kembali ke Beranda
                     val intent = Intent(this, BerandaActivity::class.java)
                     startActivity(intent)
+                    overridePendingTransition(0, 0) // Tanpa animasi
                     true
                 }
                 R.id.nav_explore -> {
@@ -53,12 +57,14 @@ class ExploreActivity : AppCompatActivity() {
                     // Navigasi ke FavoriteActivity
                     val intent = Intent(this, FavoriteActivity::class.java)
                     startActivity(intent)
+                    overridePendingTransition(0, 0)
                     true
                 }
                 R.id.nav_profile -> {
                     // Navigasi ke ProfileActivity
                     val intent = Intent(this, ProfileActivity::class.java)
                     startActivity(intent)
+                    overridePendingTransition(0, 0)
                     true
                 }
                 else -> false
