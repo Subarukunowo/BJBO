@@ -1,17 +1,16 @@
 package com.example.bjbo
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.provider.MediaStore
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.example.bjbo.databinding.ActivityExploreBinding
 import com.example.bjbo.fragment.ProdukBaruFragment
+import com.example.bjbo.network.ApiClient
+import com.example.bjbo.model.Barang
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ExploreActivity : AppCompatActivity() {
 
@@ -19,51 +18,37 @@ class ExploreActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Inisialisasi ViewBinding
         binding = ActivityExploreBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Memuat ProdukBaruFragment ke dalam FrameLayout
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(binding.produkBaruFragmentContainer.id, ProdukBaruFragment())
-                .commit()
-        }
+        // Menampilkan semua produk secara default
+        fetchProdukByKategori("")
+
+        // Listener untuk Chip Kategori
+        binding.chipBooks.setOnClickListener { fetchProdukByKategori("Books") }
+        binding.chipGames.setOnClickListener { fetchProdukByKategori("Games") }
+        binding.chipMusic.setOnClickListener { fetchProdukByKategori("Music") }
+        binding.chipCamera.setOnClickListener { fetchProdukByKategori("Camera") }
 
         // Menyetel item yang aktif di BottomNavigationView
         binding.bottomNavigation.selectedItemId = R.id.nav_explore
 
-        // Menambahkan listener untuk bottom navigation
+        // Bottom Navigation Listener
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    // Kembali ke Beranda
-                    val intent = Intent(this, BerandaActivity::class.java)
-                    startActivity(intent)
-                    overridePendingTransition(0, 0) // Tanpa animasi
+                    startActivity(Intent(this, BerandaActivity::class.java))
+                    overridePendingTransition(0, 0)
                     true
                 }
-                R.id.nav_explore -> {
-                    // Tetap di Explore
-                    true
-                }
-                R.id.menu_camera -> {
-                    // Periksa izin kamera sebelum membuka kamera
-                    checkCameraPermission()
-                    true
-                }
+                R.id.nav_explore -> true
                 R.id.nav_favorite -> {
-                    // Navigasi ke FavoriteActivity
-                    val intent = Intent(this, FavoriteActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(this, FavoriteActivity::class.java))
                     overridePendingTransition(0, 0)
                     true
                 }
                 R.id.nav_profile -> {
-                    // Navigasi ke ProfileActivity
-                    val intent = Intent(this, ProfileActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(this, ProfileActivity::class.java))
                     overridePendingTransition(0, 0)
                     true
                 }
@@ -72,54 +57,33 @@ class ExploreActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_PERMISSION_CODE
-            )
-        } else {
-            openCamera()
-        }
-    }
-
-    private fun openCamera() {
-        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-            val photo: Bitmap? = data?.extras?.get("data") as? Bitmap
-            // Lakukan sesuatu dengan foto (contoh: tampilkan di ImageView)
-            Toast.makeText(this, "Foto berhasil diambil", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, "Tidak ada foto yang diambil", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCamera()
-            } else {
-                Toast.makeText(this, "Izin kamera ditolak", Toast.LENGTH_SHORT).show()
+    /**
+     * Mengambil produk berdasarkan kategori menggunakan Mock API
+     */
+    private fun fetchProdukByKategori(kategori: String) {
+        ApiClient.instance.getBarang().enqueue(object : Callback<List<Barang>> {
+            override fun onResponse(call: Call<List<Barang>>, response: Response<List<Barang>>) {
+                if (response.isSuccessful) {
+                    val produkList = response.body()?.filter { it.kategori == kategori || kategori.isEmpty() } ?: emptyList()
+                    showProdukInFragment(produkList)
+                } else {
+                    Toast.makeText(this@ExploreActivity, "Gagal memuat produk.", Toast.LENGTH_SHORT).show()
+                }
             }
-        }
+
+            override fun onFailure(call: Call<List<Barang>>, t: Throwable) {
+                Toast.makeText(this@ExploreActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
-    companion object {
-        private const val CAMERA_REQUEST_CODE = 100
-        private const val CAMERA_PERMISSION_CODE = 101
+    /**
+     * Menampilkan produk di dalam fragment ProdukBaruFragment
+     */
+    private fun showProdukInFragment(produkList: List<Barang>) {
+        val fragment = ProdukBaruFragment.newInstance(produkList.toString())
+        supportFragmentManager.beginTransaction()
+            .replace(binding.produkBaruFragmentContainer.id, fragment)
+            .commit()
     }
 }

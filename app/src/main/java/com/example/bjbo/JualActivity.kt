@@ -93,29 +93,41 @@ class JualActivity : AppCompatActivity() {
         }
     }
 
-    // Fungsi pencarian lokasi
     private fun searchLocation(query: String) {
         ApiClientNominatim.instance.searchLocations(query).enqueue(object : Callback<List<NominatimResponse>> {
             override fun onResponse(call: Call<List<NominatimResponse>>, response: Response<List<NominatimResponse>>) {
                 if (response.isSuccessful) {
                     val locations = response.body()?.map { it.display_name } ?: emptyList()
-                    val adapter = ArrayAdapter(this@JualActivity, android.R.layout.simple_dropdown_item_1line, locations)
-                    binding.etLokasiProduk.setAdapter(adapter)
 
-                    // Periksa apakah aktivitas masih valid sebelum memanggil showDropDown
-                    if (!isFinishing && !isDestroyed) {
-                        binding.etLokasiProduk.showDropDown()
+                    if (locations.isEmpty()) {
+                        showToast("Lokasi tidak ditemukan, coba kata kunci lain.")
+                    } else {
+                        val adapter = ArrayAdapter(
+                            this@JualActivity,
+                            android.R.layout.simple_dropdown_item_1line,
+                            locations
+                        )
+                        binding.etLokasiProduk.setAdapter(adapter)
+
+                        if (!isFinishing && !isDestroyed) {
+                            binding.etLokasiProduk.showDropDown()
+                        }
                     }
+                } else {
+                    showToast("Gagal memuat lokasi: ${response.code()} - ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<List<NominatimResponse>>, t: Throwable) {
                 if (!isFinishing && !isDestroyed) {
-                    showToast("Gagal memuat lokasi: ${t.message}")
+                    showToast("Gagal memuat lokasi: ${t.localizedMessage}")
                 }
+                t.printStackTrace() // Cetak log untuk debugging
             }
         })
     }
+
+
 
 
     // Fungsi menampilkan Toast

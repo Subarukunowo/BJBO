@@ -1,5 +1,6 @@
 package com.example.bjbo
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -45,13 +46,21 @@ class DetailProductActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     bindProductDetail(response.body()!!)
                 } else {
-                    Toast.makeText(this@DetailProductActivity, "Gagal memuat detail produk", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@DetailProductActivity,
+                        "Gagal memuat detail produk",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     finish()
                 }
             }
 
             override fun onFailure(call: Call<Barang>, t: Throwable) {
-                Toast.makeText(this@DetailProductActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@DetailProductActivity,
+                    "Error: ${t.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
                 finish()
             }
         })
@@ -60,7 +69,8 @@ class DetailProductActivity : AppCompatActivity() {
     private fun bindProductDetail(barang: Barang) {
         binding.apply {
             // Format harga dengan pemisah ribuan
-            val formattedPrice = NumberFormat.getNumberInstance(Locale("id", "ID")).format(barang.harga)
+            val formattedPrice =
+                NumberFormat.getNumberInstance(Locale("id", "ID")).format(barang.harga)
 
             tvProductTitle.text = barang.nama_barang
             tvSellerName.text = "Penjual: ${barang.kategori}"
@@ -78,12 +88,20 @@ class DetailProductActivity : AppCompatActivity() {
 
         // Event untuk tombol Simpan
         binding.btnSave.setOnClickListener {
-            Toast.makeText(this@DetailProductActivity, "Produk berhasil disimpan ke daftar favorit", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this@DetailProductActivity,
+                "Produk berhasil disimpan ke daftar favorit",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
         // Event untuk tombol Beli
         binding.btnBuy.setOnClickListener {
-            Toast.makeText(this@DetailProductActivity, "Menuju ke halaman pembelian", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, PembayaranActivity::class.java)
+            // Tambahkan data yang akan dikirim ke PembayaranActivity
+            intent.putExtra("NAMA_BARANG", "Nama Produk Anda") // Ganti sesuai data barang
+            intent.putExtra("HARGA_BARANG", 100000) // Ganti sesuai harga produk
+            startActivity(intent) // Mulai aktivitas PembayaranActivity
         }
     }
 }

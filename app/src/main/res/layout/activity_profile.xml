@@ -246,7 +246,46 @@
                     android:textColor="#888" />
             </LinearLayout>
         </LinearLayout>
+        <!-- Orderan Saya -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="@drawable/bg_card"
+            android:layout_marginBottom="8dp">
 
+            <ImageView
+                android:id="@+id/ivTransaksiSaya"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="Orderan Saya"
+                android:src="@drawable/ic_transaksi_saya" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="16dp">
+
+                <TextView
+                    android:id="@+id/tvTransaksi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Orderan Saya"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#000" />
+
+                <TextView
+                    android:id="@+id/tvTranksaksi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lihat Semua Transaksi Anda"
+                    android:textSize="12sp"
+                    android:textColor="#888" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Footer Buttons -->

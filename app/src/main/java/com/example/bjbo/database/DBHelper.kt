@@ -1,4 +1,4 @@
-package com.example.bjbo
+package com.example.bjbo.database
 
 import android.content.ContentValues
 import android.content.Context

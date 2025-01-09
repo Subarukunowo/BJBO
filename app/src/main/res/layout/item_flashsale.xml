@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/ivGambar"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/app_name" />
+
+    <TextView
+        android:id="@+id/tvNamaBarang"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nama Produk"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:paddingTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvHargaOriginal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rp 1.000.000"
+        android:textSize="12sp"
+        android:textColor="#888"
+        android:paddingTop="2dp" />
+
+    <TextView
+        android:id="@+id/tvHargaDiskon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rp 800.000"
+        android:textSize="12sp"
+        android:textColor="#FF6347"
+        android:paddingTop="2dp" />
+</LinearLayout>
