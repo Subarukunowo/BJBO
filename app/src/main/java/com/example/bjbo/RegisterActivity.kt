@@ -4,49 +4,62 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.bjbo.database.DBHelper
 import com.example.bjbo.databinding.ActivityRegisterBinding
-import com.example.bjbo.database.UserDBHelper
+import com.example.bjbo.model.RegisterRequest
+import com.example.bjbo.model.User
+import com.example.bjbo.network.ApiClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
-    private lateinit var dbHelper: UserDBHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        dbHelper = UserDBHelper(this)
+        setupListeners()
+    }
 
+    private fun setupListeners() {
         binding.registerButton.setOnClickListener {
-            val username = binding.emailInput.text.toString().trim() // Gunakan usernameInput
-            val password = binding.passwordInput.text.toString().trim()
+            val name = binding.nameInput.text.toString()
+            val email = binding.emailInput.text.toString()
+            val password = binding.passwordInput.text.toString()
 
-            if (username.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Mohon isi username dan password.", Toast.LENGTH_SHORT).show()
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                showToast("Harap isi semua field.")
             } else {
-                // Tambahkan user ke database
-                val isAdded = dbHelper.registerUser(username, password)
-                if (isAdded) {
-                    Toast.makeText(this, "Registrasi berhasil! Silakan login.", Toast.LENGTH_SHORT).show()
-                    dbHelper.logAllUsers()
-                    navigateToLogin()
-                } else {
-                    Toast.makeText(this, "Registrasi gagal. Username mungkin sudah digunakan.", Toast.LENGTH_SHORT).show()
-                }
+                registerUser(name, email, password)
             }
-        }
-
-        binding.registerText.setOnClickListener {
-            navigateToLogin()
         }
     }
 
-    private fun navigateToLogin() {
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-        finish()
+    private fun registerUser(name: String, email: String, password: String) {
+        val newUser = RegisterRequest(name = name, email = email, password = password)
+
+        ApiClient.instance.registerUser(newUser).enqueue(object : Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                if (response.isSuccessful) {
+                    showToast("Registrasi berhasil. Silakan login.")
+                    startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
+                    finish()
+                } else {
+                    val errorMessage = response.errorBody()?.string() ?: "Terjadi kesalahan."
+                    showToast("Gagal registrasi: $errorMessage")
+                }
+            }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                showToast("Terjadi kesalahan: ${t.localizedMessage}")
+            }
+        })
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

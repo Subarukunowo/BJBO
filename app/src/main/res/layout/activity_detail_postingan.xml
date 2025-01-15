@@ -1,4 +1,3 @@
-
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -25,7 +24,7 @@
 
         <!-- Product Image -->
         <ImageView
-            android:id="@+id/ivProductImage"
+            android:id="@+id/ivPostinganImage"
             android:layout_width="0dp"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
@@ -36,7 +35,7 @@
 
         <!-- Product Title -->
         <TextView
-            android:id="@+id/tvProductTitle"
+            android:id="@+id/tvPostinganName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
@@ -44,9 +43,20 @@
             android:textColor="#000"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/ivProductImage"
+            app:layout_constraintTop_toBottomOf="@id/ivPostinganImage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Product Location -->
+        <TextView
+            android:id="@+id/tvPostinganLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#555"
+            android:layout_marginStart="16dp"
+            app:layout_constraintTop_toBottomOf="@id/tvPostinganName"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <!-- Seller Name -->
         <TextView
@@ -56,12 +66,12 @@
             android:textSize="14sp"
             android:textColor="#777"
             android:layout_marginStart="16dp"
-            app:layout_constraintTop_toBottomOf="@id/tvProductTitle"
+            app:layout_constraintTop_toBottomOf="@id/tvPostinganLocation"
             app:layout_constraintStart_toStartOf="parent" />
 
         <!-- Product Price -->
         <TextView
-            android:id="@+id/tvProductPrice"
+            android:id="@+id/tvPostinganPrice"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="22sp"
@@ -73,14 +83,14 @@
 
         <!-- Product Description -->
         <TextView
-            android:id="@+id/tvProductDescription"
+            android:id="@+id/tvPostinganDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:textColor="#000"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            app:layout_constraintTop_toBottomOf="@id/tvProductPrice"
+            app:layout_constraintTop_toBottomOf="@id/tvPostinganPrice"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -93,7 +103,7 @@
             android:background="@drawable/bg_chat_button"
             android:padding="8dp"
             android:layout_marginTop="28dp"
-            app:layout_constraintTop_toBottomOf="@id/tvProductDescription"
+            app:layout_constraintTop_toBottomOf="@id/tvPostinganDescription"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 

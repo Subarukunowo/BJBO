@@ -1,5 +1,6 @@
 package com.example.bjbo
 
+import PostinganListFragment
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,7 +13,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.commit
 import com.example.bjbo.databinding.ActivityBerandaBinding
-import com.example.bjbo.fragment.ProdukBaruFragment
 
 class BerandaActivity : AppCompatActivity() {
 
@@ -23,13 +23,20 @@ class BerandaActivity : AppCompatActivity() {
         binding = ActivityBerandaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Tambahkan fragment ProdukBaruFragment
+        // Ambil nama pengguna dari SharedPreferences
+        val sharedPreferences = getSharedPreferences("BJBO_PREFERENCES", MODE_PRIVATE)
+        val userName = sharedPreferences.getString("USER_NAME", "Pengguna")
+
+        // Tampilkan nama pengguna di TextView
+        binding.tvWelcome.text = "Hey $userName"
+
+        // Tambahkan fragment PostinganListFragment
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 replace(
-                    R.id.produkBaruFragmentContainer, // ID dari FrameLayout
-                    ProdukBaruFragment(), // Fragment yang akan ditampilkan
-                    ProdukBaruFragment::class.java.simpleName // Tag opsional
+                    R.id.postinganFragmentContainer, // ID container dari layout Anda
+                    PostinganListFragment(),
+                    PostinganListFragment::class.java.simpleName
                 )
             }
         }
