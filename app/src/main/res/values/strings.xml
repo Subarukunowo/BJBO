@@ -15,7 +15,11 @@
     <string name="logout_button">Keluar</string>
     <string name="metode_pembayaran">Metode Pembayaran</string>
     <!-- Shared Preferences Strings -->
+    <string-array name="kelamin_array">
 
+        <item>Laki-laki</item>
+        <item>Perempuan</item>
+    </string-array>
 
 
 </resources>

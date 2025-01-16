@@ -1,6 +1,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Warna latar belakang -->
-    <solid android:color="#DFF1F8" /> <!-- Biru muda sesuai desain -->
+    <solid android:color="#65D4FF" /> <!-- Biru muda sesuai desain -->
 
     <!-- Sudut melengkung -->
     <corners android:radius="12dp" />

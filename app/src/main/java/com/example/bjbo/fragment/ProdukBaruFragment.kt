@@ -1,5 +1,6 @@
-package com.example.bjbo.fragment
 
+package com.example.bjbo.fragment
+/*
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -87,3 +88,4 @@ class ProdukBaruFragment : Fragment() {
         })
     }
 }
+*/

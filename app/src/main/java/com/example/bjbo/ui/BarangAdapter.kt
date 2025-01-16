@@ -1,4 +1,4 @@
-package com.example.bjbo
+package com.example.bjbo.ui
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.bjbo.R
 import com.example.bjbo.model.Barang
 
 class BarangAdapter(

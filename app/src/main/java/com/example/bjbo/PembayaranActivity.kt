@@ -3,6 +3,7 @@ package com.example.bjbo
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bjbo.databinding.ActivityPembayaranBinding
@@ -27,17 +28,25 @@ class PembayaranActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+        // Mendapatkan data produk dari Intent
         val name = intent.getStringExtra("name") ?: "Unknown"
         val price = intent.getLongExtra("price", 0L)
-
+        val biayaAplikasi = 500L
+        val biayaTambahan = 500L
+        val totalHarga = price + biayaAplikasi + biayaTambahan
+        // Menampilkan data produk di UI
         binding.tvNamaBarang.text = name
         binding.tvHargaProduk.text = "Rp $price"
-        binding.tvTotal.text = "Rp $price"
+        binding.tvBiayaAplikasi.text = "Rp $biayaAplikasi"
+        binding.tvBiayaTambahan.text = "Rp $biayaTambahan"
+        binding.tvTotal.text = "Rp $totalHarga"
 
-        setupListeners(price)
+
+        setupListeners(totalHarga)
     }
 
     private fun setupListeners(price: Long) {
+        // Listener untuk metode pembayaran
         binding.radioGroupMetodePembayaran.setOnCheckedChangeListener { _, checkedId ->
             selectedMetodePembayaran = when (checkedId) {
                 R.id.radioCod -> "COD"
@@ -46,6 +55,7 @@ class PembayaranActivity : AppCompatActivity() {
             }
         }
 
+        // Listener tombol bayar
         binding.btnBayar.setOnClickListener {
             if (selectedMetodePembayaran.isEmpty()) {
                 showToast("Pilih metode pembayaran terlebih dahulu!")
@@ -54,6 +64,7 @@ class PembayaranActivity : AppCompatActivity() {
             }
         }
 
+        // Listener tombol kembali
         binding.btnBack.setOnClickListener {
             onBackPressed()
         }
@@ -80,27 +91,36 @@ class PembayaranActivity : AppCompatActivity() {
             status = "pending"
         )
 
-        ApiClient.instance.createOrder(orderRequest)
-            .enqueue(object : Callback<Order> {
-                override fun onResponse(call: Call<Order>, response: Response<Order>) {
-                    if (response.isSuccessful) {
-                        val createdOrder = response.body()
-                        val redirectUrl = createdOrder?.redirectUrl
-                        if (!redirectUrl.isNullOrEmpty()) {
+        ApiClient.instance.createOrder(orderRequest).enqueue(object : Callback<Order> {
+            override fun onResponse(call: Call<Order>, response: Response<Order>) {
+                if (response.isSuccessful) {
+                    val createdOrder = response.body()
+                    if (createdOrder != null) {
+                        val snapToken = createdOrder.snap_token
+                        if (!snapToken.isNullOrEmpty()) {
+                            val redirectUrl = "https://app.sandbox.midtrans.com/snap/v2/vtweb/$snapToken"
                             openMidtransPayment(redirectUrl)
                         } else {
-                            showToast("Gagal mendapatkan URL Redirect.")
+                            showToast("Gagal mendapatkan Snap Token.")
+                            // Tambahkan logging
+                            Log.e("PembayaranActivity", "Snap Token kosong. Respons: ${response.body()}")
                         }
                     } else {
-                        val errorBody = response.errorBody()?.string()
-                        showToast("Gagal memproses pesanan: $errorBody")
+                        showToast("Respons kosong dari server.")
+                        Log.e("PembayaranActivity", "Respons kosong. Respons body: ${response.body()}")
                     }
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    showToast("Gagal memproses pesanan: $errorBody")
+                    Log.e("PembayaranActivity", "Gagal memproses pesanan. Kode: ${response.code()}, Error: $errorBody")
                 }
+            }
 
-                override fun onFailure(call: Call<Order>, t: Throwable) {
-                    showToast("Terjadi kesalahan: ${t.localizedMessage}")
-                }
-            })
+
+            override fun onFailure(call: Call<Order>, t: Throwable) {
+                showToast("Terjadi kesalahan: ${t.localizedMessage}")
+            }
+        })
     }
 
     private fun openMidtransPayment(redirectUrl: String) {

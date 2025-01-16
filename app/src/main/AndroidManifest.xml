@@ -21,7 +21,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BJBO"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:usesCleartextTraffic="true">>
 
 
         <activity android:name=".LoginActivity"
@@ -30,12 +31,13 @@
             android:exported="false"/>
 <activity android:name=".RegisterActivity"/>
         <activity android:name=".ExploreActivity" />
-        <activity android:name=".DetailProductActivity"/>
+
         <activity android:name=".JualActivity"/>
         <activity android:name=".PilihLokasiActivity"/>
         <activity android:name=".PembayaranActivity"/>
 <activity android:name=".ProfileActivity"/>
         <activity android:name=".AccountActivity"/>
+        <activity android:name=".DetailPostinganActivity" />
 
     </application>
 

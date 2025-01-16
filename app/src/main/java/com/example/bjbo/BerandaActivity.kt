@@ -1,12 +1,14 @@
 package com.example.bjbo
 
+import Postingan
 import PostinganListFragment
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -14,34 +16,38 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.commit
 import com.example.bjbo.databinding.ActivityBerandaBinding
 
+import com.example.bjbo.network.ApiClient
+import com.example.bjbo.utils.SharedPreferencesHelper
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 class BerandaActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityBerandaBinding
+    private val postinganList = mutableListOf<Postingan>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBerandaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Ambil nama pengguna dari SharedPreferences
-        val sharedPreferences = getSharedPreferences("BJBO_PREFERENCES", MODE_PRIVATE)
-        val userName = sharedPreferences.getString("USER_NAME", "Pengguna")
+        val userId = SharedPreferencesHelper.getUserId(this)
+        val userName = SharedPreferencesHelper.getUserName(this)
 
-        // Tampilkan nama pengguna di TextView
-        binding.tvWelcome.text = "Hey $userName"
-
-        // Tambahkan fragment PostinganListFragment
-        if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                replace(
-                    R.id.postinganFragmentContainer, // ID container dari layout Anda
-                    PostinganListFragment(),
-                    PostinganListFragment::class.java.simpleName
-                )
-            }
+        if (userId == -1) {
+            Toast.makeText(this, "Silakan login kembali.", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+        } else {
+            binding.tvWelcome.text = "Hey $userName"
         }
 
-        // Tambahkan listener untuk ikon kamera
+        // Listener lainnya
+
+
+    // Tambahkan listener untuk ikon kamera
         binding.ivCamera.setOnClickListener {
             checkCameraPermission()
         }
@@ -54,32 +60,47 @@ class BerandaActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Listener untuk pencarian
+        binding.searchBar.setOnEditorActionListener { textView, actionId, keyEvent ->
+            val keyword = textView.text.toString().trim()
+            if (keyword.isNotEmpty()) {
+                searchPostingan(keyword)
+            } else {
+                Toast.makeText(this, "Masukkan kata kunci untuk pencarian", Toast.LENGTH_SHORT).show()
+            }
+            true
+        }
+
+        // Tambahkan fragment PostinganListFragment
+        if (savedInstanceState == null) {
+            supportFragmentManager.commit {
+                replace(
+                    R.id.postinganFragmentContainer,
+                    PostinganListFragment(),
+                    PostinganListFragment::class.java.simpleName
+                )
+            }
+        }
+
         // Listener untuk bottom navigation
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> {
-                    // Tetap di Beranda
-                    true
-                }
+                R.id.nav_home -> true
                 R.id.nav_explore -> {
-                    // Navigasi ke ExploreActivity
                     val intent = Intent(this, ExploreActivity::class.java)
                     startActivity(intent)
                     true
                 }
                 R.id.menu_camera -> {
-                    // Buka kamera
                     checkCameraPermission()
                     true
                 }
                 R.id.nav_favorite -> {
-                    // Navigasi ke FavoriteActivity
                     val intent = Intent(this, FavoriteActivity::class.java)
                     startActivity(intent)
                     true
                 }
                 R.id.nav_profile -> {
-                    // Navigasi ke ProfileActivity
                     val intent = Intent(this, ProfileActivity::class.java)
                     startActivity(intent)
                     true
@@ -87,6 +108,46 @@ class BerandaActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+    // Fungsi untuk mengambil USER_ID dari SharedPreferences
+    fun getUserIdFromSharedPreferences(context: Context): Int {
+        val sharedPreferences = context.getSharedPreferences("USER_PREFS", Context.MODE_PRIVATE)
+        return sharedPreferences.getInt("USER_ID", -1) // -1 sebagai default jika tidak ditemukan
+    }
+    private fun searchPostingan(keyword: String) {
+        ApiClient.instance.searchPostingan(keyword).enqueue(object : Callback<List<Postingan>> {
+            override fun onResponse(
+                call: Call<List<Postingan>>,
+                response: Response<List<Postingan>>
+            ) {
+                if (response.isSuccessful) {
+                    val results = response.body()
+                    if (!results.isNullOrEmpty()) {
+                        postinganList.clear()
+                        postinganList.addAll(results)
+                        // Update fragment dengan daftar postingan baru
+                        supportFragmentManager.commit {
+                            replace(
+                                R.id.postinganFragmentContainer,
+                                PostinganListFragment.newInstance(postinganList)
+                            )
+                        }
+                    } else {
+                        Toast.makeText(this@BerandaActivity, "Tidak ada hasil ditemukan.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@BerandaActivity,
+                        "Gagal memuat hasil pencarian",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Postingan>>, t: Throwable) {
+                Toast.makeText(this@BerandaActivity, "Kesalahan jaringan: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun checkCameraPermission() {
@@ -106,34 +167,6 @@ class BerandaActivity : AppCompatActivity() {
     private fun openCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-            val photo: Bitmap? = data?.extras?.get("data") as? Bitmap
-            if (photo != null) {
-                binding.profileImage.setImageBitmap(photo) // Menampilkan gambar di profileImage
-            } else {
-                Toast.makeText(this, "Gagal mengambil foto", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCamera()
-            } else {
-                Toast.makeText(this, "Izin kamera diperlukan untuk mengambil foto", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     companion object {

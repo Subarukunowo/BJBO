@@ -1,5 +1,5 @@
 package com.example.bjbo.database
-
+/*
 
 
 import android.content.ContentValues
@@ -125,3 +125,4 @@ class UserDBHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, 
         db.close()
     }
 }
+*/

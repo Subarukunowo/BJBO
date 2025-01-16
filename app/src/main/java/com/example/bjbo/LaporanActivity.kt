@@ -1,100 +1,81 @@
 package com.example.bjbo
 
 import android.os.Bundle
-import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.bjbo.databinding.ActivityLaporanBinding
-import com.example.bjbo.model.Laporan
-import com.example.bjbo.network.LaporanApiClient
 
-import com.example.bjbo.ui.LaporanAdapter
+import com.example.bjbo.databinding.ActivityLaporanBinding
+import com.example.bjbo.model.LaporanRequest
+import com.example.bjbo.network.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class LaporanActivity : AppCompatActivity() {
+class FormLaporanActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLaporanBinding
-    private val laporanList = mutableListOf<Laporan>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLaporanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.recyclerViewLaporan.layoutManager = LinearLayoutManager(this)
-        val adapter = LaporanAdapter(this, laporanList)
-        binding.recyclerViewLaporan.adapter = adapter
+        // Set up spinner for jenis laporan
+        val jenisLaporanList = listOf("Penipuan", "Postingan Palsu", "Lainnya")
+        val spinnerAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            jenisLaporanList
+        )
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerJenisLaporan.adapter = spinnerAdapter
 
-        loadLaporans(adapter)
+        // Handle submit button
+        binding.btnKirimLaporan.setOnClickListener {
+            val jenisLaporan = binding.spinnerJenisLaporan.selectedItem.toString()
+            val teksLaporan = binding.etTeksLaporan.text.toString().trim()
 
-        // Tombol tambah laporan
-        binding.btnTambahLaporan.setOnClickListener {
-            val jenisLaporan = binding.etJenisLaporan.text.toString()
-            val teksLaporan = binding.etTeksLaporan.text.toString()
-            if (jenisLaporan.isEmpty() || teksLaporan.isEmpty()) {
-                showToast("Harap isi semua field")
-            } else {
-                val laporan = Laporan(
-                    id = 0, // ID akan diisi oleh server
+            if (teksLaporan.isEmpty()) {
+                Toast.makeText(this, "Teks laporan tidak boleh kosong.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Kirim laporan ke server
+            val postinganId = intent.getIntExtra("postingan_id", -1)
+            val userId = intent.getIntExtra("user_id", -1)
+
+            if (postinganId != -1 && userId != -1) {
+                val laporanRequest = LaporanRequest(
                     jenis_laporan = jenisLaporan,
                     teks_laporan = teksLaporan,
-                    user_id = 1, // Ubah sesuai user login
-                    status = "Pending",
-                    postingan_id = 1, // Ubah sesuai postingan yang dilaporkan
-                    created_at = "",
-                    updated_at = ""
+                    user_id = userId,
+                    postingan_id = postinganId,
+                    status = "Pending"
                 )
-                addLaporan(laporan, adapter)
+
+                kirimLaporan(laporanRequest)
+            } else {
+                Toast.makeText(this, "Data laporan tidak valid.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun loadLaporans(adapter: LaporanAdapter) {
-        LaporanApiClient.instance.getAllLaporans().enqueue(object : Callback<List<Laporan>> {
-            override fun onResponse(call: Call<List<Laporan>>, response: Response<List<Laporan>>) {
+    private fun kirimLaporan(laporan: LaporanRequest) {
+        ApiClient.instance.addLaporan(laporan).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    response.body()?.let {
-                        laporanList.clear()
-                        laporanList.addAll(it)
-                        adapter.notifyDataSetChanged()
-                    }
+                    Toast.makeText(this@FormLaporanActivity, "Laporan berhasil dikirim.", Toast.LENGTH_SHORT).show()
+                    finish()
                 } else {
-                    showToast("Gagal memuat laporan: ${response.message()}")
+                    Toast.makeText(this@FormLaporanActivity, "Gagal mengirim laporan.", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<List<Laporan>>, t: Throwable) {
-                showToast("Terjadi kesalahan: ${t.message}")
-                t.printStackTrace()
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(this@FormLaporanActivity, "Kesalahan jaringan: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-
-    private fun addLaporan(laporan: Laporan, adapter: LaporanAdapter) {
-        LaporanApiClient.instance.addLaporan(laporan).enqueue(object : Callback<Laporan> {
-            override fun onResponse(call: Call<Laporan>, response: Response<Laporan>) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        laporanList.add(it)
-                        adapter.notifyDataSetChanged()
-                        showToast("Laporan berhasil ditambahkan")
-                    }
-                } else {
-                    showToast("Gagal menambahkan laporan: ${response.message()}")
-                }
-            }
-
-            override fun onFailure(call: Call<Laporan>, t: Throwable) {
-                showToast("Terjadi kesalahan: ${t.message}")
-                t.printStackTrace()
-            }
-        })
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

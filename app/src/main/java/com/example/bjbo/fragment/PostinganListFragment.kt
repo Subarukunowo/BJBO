@@ -37,7 +37,16 @@ class PostinganListFragment : Fragment() {
 
         return view
     }
+    companion object {
+        private const val ARG_POSTINGAN_LIST = "postinganList"
 
+        fun newInstance(postinganList: MutableList<Postingan>): PostinganListFragment {
+            val fragment = PostinganListFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            return fragment
+        }
+    }
     private fun loadPostinganData() {
         Log.d(
             "API Request",

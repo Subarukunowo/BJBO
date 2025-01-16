@@ -1,14 +1,12 @@
 package com.example.bjbo.model
 
-import Postingan
-
 data class Order(
     val id: Int,
-    val user_id: User,
-    val postingan_id: Postingan,
+    val user_id: Int,
+    val postingan_id: Int,
     val total_harga: Double,
-    val harga_tawaran: Double? = null,
     val status: String,
-    val snaptoken: String? = null,
-    val redirectUrl: String? = null
+    val snap_token: String?, // Pastikan nama properti sesuai dengan JSON
+    val redirect_url: String? // Tambahkan jika diperlukan
 )
+
