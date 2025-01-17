@@ -15,9 +15,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.commit
 import com.example.bjbo.databinding.ActivityBerandaBinding
-
 import com.example.bjbo.network.ApiClient
-import com.example.bjbo.utils.SharedPreferencesHelper
+import com.example.bjbo.database.SharedPreferencesHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,22 +31,27 @@ class BerandaActivity : AppCompatActivity() {
         binding = ActivityBerandaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Ambil userId dan userName dari SharedPreferences
         val userId = SharedPreferencesHelper.getUserId(this)
         val userName = SharedPreferencesHelper.getUserName(this)
 
+        // Logging untuk debugging
+        Log.d("BerandaActivity", "User ID: $userId")
+        Log.d("BerandaActivity", "User Name: $userName")
+
         if (userId == -1) {
+            Log.e("BerandaActivity", "User ID tidak valid. Mengarahkan ke LoginActivity.")
             Toast.makeText(this, "Silakan login kembali.", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         } else {
-            binding.tvWelcome.text = "Hey $userName"
+            binding.tvWelcome.text = "Hey, $userName!"
         }
 
         // Listener lainnya
 
-
-    // Tambahkan listener untuk ikon kamera
+        // Listener untuk ikon kamera
         binding.ivCamera.setOnClickListener {
             checkCameraPermission()
         }
@@ -55,7 +59,6 @@ class BerandaActivity : AppCompatActivity() {
         // Listener untuk tombol JUAL
         binding.btnJual.setOnClickListener {
             Toast.makeText(this, "Tombol JUAL diklik!", Toast.LENGTH_SHORT).show()
-            // Navigasi ke JualActivity
             val intent = Intent(this, JualActivity::class.java)
             startActivity(intent)
         }
@@ -109,11 +112,7 @@ class BerandaActivity : AppCompatActivity() {
             }
         }
     }
-    // Fungsi untuk mengambil USER_ID dari SharedPreferences
-    fun getUserIdFromSharedPreferences(context: Context): Int {
-        val sharedPreferences = context.getSharedPreferences("USER_PREFS", Context.MODE_PRIVATE)
-        return sharedPreferences.getInt("USER_ID", -1) // -1 sebagai default jika tidak ditemukan
-    }
+
     private fun searchPostingan(keyword: String) {
         ApiClient.instance.searchPostingan(keyword).enqueue(object : Callback<List<Postingan>> {
             override fun onResponse(
@@ -122,10 +121,10 @@ class BerandaActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful) {
                     val results = response.body()
+                    Log.d("BerandaActivity", "Hasil pencarian: ${results?.size} postingan ditemukan.")
                     if (!results.isNullOrEmpty()) {
                         postinganList.clear()
                         postinganList.addAll(results)
-                        // Update fragment dengan daftar postingan baru
                         supportFragmentManager.commit {
                             replace(
                                 R.id.postinganFragmentContainer,
@@ -133,18 +132,17 @@ class BerandaActivity : AppCompatActivity() {
                             )
                         }
                     } else {
+                        Log.d("BerandaActivity", "Tidak ada hasil ditemukan untuk keyword: $keyword")
                         Toast.makeText(this@BerandaActivity, "Tidak ada hasil ditemukan.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Toast.makeText(
-                        this@BerandaActivity,
-                        "Gagal memuat hasil pencarian",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Log.e("BerandaActivity", "Gagal memuat hasil pencarian: ${response.code()}")
+                    Toast.makeText(this@BerandaActivity, "Gagal memuat hasil pencarian", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<List<Postingan>>, t: Throwable) {
+                Log.e("BerandaActivity", "Kesalahan jaringan: ${t.message}")
                 Toast.makeText(this@BerandaActivity, "Kesalahan jaringan: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })

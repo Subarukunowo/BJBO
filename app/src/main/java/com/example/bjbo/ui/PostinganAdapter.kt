@@ -10,7 +10,6 @@ import com.example.bjbo.R
 import android.content.Intent
 import java.text.NumberFormat
 import java.util.Locale
-
 import com.example.bjbo.DetailPostinganActivity
 
 class PostinganAdapter(
@@ -33,16 +32,21 @@ class PostinganAdapter(
     override fun onBindViewHolder(holder: PostinganViewHolder, position: Int) {
         val postingan = postinganList[position]
 
-        // Set data ke TextView
+        // Set data ke TextView dengan pengecekan null
         holder.nameTextView.text = postingan.name ?: "Tidak ada nama"
 
-        // Format harga menggunakan NumberFormat
-        val formattedPrice = NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(postingan.price)
+        // Format harga menggunakan NumberFormat dan pengecekan null
+        val formattedPrice = try {
+            NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(postingan.price ?: 0.0)
+        } catch (e: Exception) {
+            "Harga tidak tersedia"
+        }
         holder.priceTextView.text = formattedPrice
 
+        // Set lokasi dengan pengecekan null
         holder.locationTextView.text = postingan.lokasi ?: "Lokasi tidak tersedia"
 
-        // Memuat gambar menggunakan Glide
+        // Memuat gambar menggunakan Glide dengan penanganan error
         Glide.with(context)
             .load(postingan.image)
             .placeholder(R.drawable.baseline_image_24)
@@ -53,9 +57,9 @@ class PostinganAdapter(
         holder.itemView.setOnClickListener {
             val intent = Intent(context, DetailPostinganActivity::class.java).apply {
                 putExtra("name", postingan.name)
-                putExtra("price", postingan.price)
+                putExtra("price", formattedPrice)
                 putExtra("location", postingan.lokasi)
-                putExtra("description", postingan.description ?: "Tidak ada deskripsi")
+                putExtra("description", postingan.description)
                 putExtra("image", postingan.image)
             }
             context.startActivity(intent)

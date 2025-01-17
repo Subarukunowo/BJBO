@@ -15,6 +15,7 @@ import com.example.bjbo.model.RegisterRequest
 import com.example.bjbo.model.Transaction
 import com.example.bjbo.model.Ulasan
 import com.example.bjbo.model.User
+import com.example.bjbo.model.UserRespons
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -47,9 +48,8 @@ interface ApiService {
 
 
         @GET("postingan")
-        fun getAllPostingan(): Call<ApiResponse<Postingan>>
+        fun getAllPostingan(): Call<ApiResponse<List<Postingan>>>
 
-    @Headers("Content-Type: application/json")
     @Multipart
     @POST("postingan")
     fun addPostingan(
@@ -63,8 +63,6 @@ interface ApiService {
         @Part("user_id") userId: RequestBody,
         @Part("username") username: RequestBody
     ): Call<ApiResponse<Postingan>>
-
-
 
     // PUT: Update postingan
         @PUT("postingan/{id}")
@@ -108,7 +106,8 @@ interface ApiService {
         fun deleteUlasan(@Path("id") id: Int): Call<Unit>
 
     @POST("pengguna/login")
-    fun loginUser(@Body loginRequest: LoginRequest): Call<User>
+    fun loginUser(@Body loginRequest: LoginRequest): Call<UserRespons>
+
 
     @POST("pengguna/logout")
     fun logoutUser(): Call<Void>

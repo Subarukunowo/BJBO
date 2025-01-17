@@ -37,6 +37,7 @@ class PostinganListFragment : Fragment() {
 
         return view
     }
+
     companion object {
         private const val ARG_POSTINGAN_LIST = "postinganList"
 
@@ -47,18 +48,16 @@ class PostinganListFragment : Fragment() {
             return fragment
         }
     }
+
     private fun loadPostinganData() {
-        Log.d(
-            "API Request",
-            "Fetching data from: ${ApiClient.instance.getAllPostingan().request().url}"
-        )
+        Log.d("API Request", "Fetching data from: ${ApiClient.instance.getAllPostingan().request().url}")
 
         ApiClient.instance.getAllPostingan()
-            .enqueue(object : Callback<ApiResponse<Postingan>> {
+            .enqueue(object : Callback<ApiResponse<List<Postingan>>> {
                 @SuppressLint("NotifyDataSetChanged")
                 override fun onResponse(
-                    call: Call<ApiResponse<Postingan>>,
-                    response: Response<ApiResponse<Postingan>>
+                    call: Call<ApiResponse<List<Postingan>>>,
+                    response: Response<ApiResponse<List<Postingan>>>
                 ) {
                     if (response.isSuccessful) {
                         val apiResponse = response.body()
@@ -66,40 +65,30 @@ class PostinganListFragment : Fragment() {
                             postinganList.clear()
 
                             // Filter hanya postingan dengan status 'disetujui'
-                            val filteredData = apiResponse.data.filter { it.status == "disetujui" }
+                            val filteredData = apiResponse.data.orEmpty().filter { it.status == "disetujui" }
 
                             // Batasi hanya 5 elemen pertama setelah filter
                             val limitedData = filteredData.take(5)
 
                             // Update image URL untuk setiap postingan
                             limitedData.forEachIndexed { index, postingan ->
-                                postingan.image =
-                                    ApiClient.getFullimageUrl(postingan.image)
+                                postingan.image = ApiClient.getFullimageUrl(postingan.image)
                                 Log.d("Image URL", "Position $index: ${postingan.image}")
                             }
 
                             postinganList.addAll(limitedData)
                             postinganAdapter.notifyDataSetChanged()
                         } else {
-                            Toast.makeText(
-                                requireContext(),
-                                "Data tidak ditemukan",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(requireContext(), "Data tidak ditemukan", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Error: ${response.code()}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(), "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
                         Log.e("API Error", "Error: ${response.code()} ${response.message()}")
                     }
                 }
 
-                override fun onFailure(call: Call<ApiResponse<Postingan>>, t: Throwable) {
-                    Toast.makeText(requireContext(), "Failure: ${t.message}", Toast.LENGTH_SHORT)
-                        .show()
+                override fun onFailure(call: Call<ApiResponse<List<Postingan>>>, t: Throwable) {
+                    Toast.makeText(requireContext(), "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
                     Log.e("API Error", "Failure: ${t.message}")
                 }
             })

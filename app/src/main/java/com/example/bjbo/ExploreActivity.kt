@@ -1,11 +1,11 @@
 package com.example.bjbo
 
+import PostinganListFragment
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import com.example.bjbo.databinding.ActivityExploreBinding
-import com.example.bjbo.fragment.PostinganFragmentVertical
 
 class ExploreActivity : AppCompatActivity() {
 
@@ -47,8 +47,7 @@ class ExploreActivity : AppCompatActivity() {
             supportFragmentManager.commit {
                 replace(
                     R.id.fragmentContainerVertical, // ID sesuai dengan layout XML
-                    PostinganFragmentVertical(), // Fragment yang digunakan
-                    PostinganFragmentVertical::class.java.simpleName
+                  PostinganListFragment()
                 )
             }
         }

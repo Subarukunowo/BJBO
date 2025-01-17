@@ -1,22 +1,21 @@
-import com.google.gson.annotations.SerializedName
+import java.math.BigInteger
 
 data class ApiResponse<T>(
     val success: Boolean,
-    val data: List<T>
+    val data: T
 )
 
 data class Postingan(
-    val id: Int,
-    val name: String,
-    val price: Long?,
+    val username: String,
+    val price: BigInteger,
     val category: String,
     val description: String,
     var image: String?,
     val lokasi: String,
-    val user_id: Int,
-    val username: String,
     val status: String,
-    val created_at: String,
+    val user_id: BigInteger,
+    val name: String,
     val updated_at: String,
-
-    )
+    val created_at: String,
+    val id: Int
+)
