@@ -5,6 +5,7 @@ import Postingan
 import com.example.bjbo.model.Laporan
 import com.example.bjbo.model.LaporanRequest
 import com.example.bjbo.model.LoginRequest
+import com.example.bjbo.model.LogoutResponse
 
 import com.example.bjbo.model.NominatimResponse
 import com.example.bjbo.model.Order
@@ -23,6 +24,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -109,8 +111,7 @@ interface ApiService {
     fun loginUser(@Body loginRequest: LoginRequest): Call<UserRespons>
 
 
-    @POST("pengguna/logout")
-    fun logoutUser(): Call<Void>
+
 
     @GET("pengguna/{id}")
     fun getUserById(@Path("id") id: Int): Call<User>
@@ -148,5 +149,11 @@ interface ApiService {
             @Query("format") format: String = "json", // Format hasil JSON
             @Query("limit") limit: Int = 5      // Batas jumlah hasil
         ): Call<List<NominatimResponse>>
-    }
+
+    @POST("logout")
+    fun logoutUser(
+        @Header("Authorization") token: String
+    ): Call<LogoutResponse>
+}
+
 

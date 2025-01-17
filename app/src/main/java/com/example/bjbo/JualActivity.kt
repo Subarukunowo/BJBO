@@ -84,33 +84,6 @@ class JualActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchLocation(query: String) {
-        ApiClientNominatim.instance.searchLocations(query).enqueue(object : Callback<List<NominatimResponse>> {
-            override fun onResponse(call: Call<List<NominatimResponse>>, response: Response<List<NominatimResponse>>) {
-                if (response.isSuccessful) {
-                    val locations = response.body()?.map { it.display_name } ?: emptyList()
-                    val adapter = ArrayAdapter(
-                        this@JualActivity,
-                        android.R.layout.simple_dropdown_item_1line,
-                        locations
-                    )
-                    binding.etLokasiProduk.setAdapter(adapter)
-                    if (binding.etLokasiProduk.hasFocus()) {
-                        binding.etLokasiProduk.showDropDown()
-                    }
-                } else {
-                    Log.e("Search Location", "Error: ${response.code()}, ${response.message()}")
-                }
-            }
-
-            override fun onFailure(call: Call<List<NominatimResponse>>, t: Throwable) {
-                Log.e("Search Location", "Failure: ${t.localizedMessage}", t)
-                showToast("Gagal memuat lokasi: ${t.localizedMessage}")
-            }
-        })
-    }
-
-
     private fun validateInput(): Boolean {
         val name = binding.etName.text.toString()
         val price = binding.etPrice.text.toString().toLongOrNull()
@@ -156,12 +129,17 @@ class JualActivity : AppCompatActivity() {
         val userId = SharedPreferencesHelper.getUserId(this).toString()
         val username = SharedPreferencesHelper.getUserName(this)
 
-        // Prepare image
+        // Validate and prepare image
         val imageUri = selectedImages.firstOrNull()
         val imageFile = imageUri?.let { getFileFromUri(it) }
 
-        if (imageFile == null || imageFile.length() > MAX_IMAGE_SIZE) {
-            showToast("Gagal memproses gambar atau ukuran terlalu besar")
+        if (imageFile == null) {
+            showToast("Gagal memproses gambar")
+            return
+        }
+
+        if (imageFile.length() > MAX_IMAGE_SIZE) {
+            showToast("Ukuran gambar terlalu besar (maksimal 2MB)")
             return
         }
 
@@ -196,31 +174,35 @@ class JualActivity : AppCompatActivity() {
             requestBody["username"]!!
         ).enqueue(object : Callback<ApiResponse<Postingan>> {
             override fun onResponse(call: Call<ApiResponse<Postingan>>, response: Response<ApiResponse<Postingan>>) {
+                binding.btnJualSekarang.isEnabled = true
+                binding.btnJualSekarang.text = "Jual Sekarang"
+
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody?.success == true) {
+                        val postingan = responseBody.data
                         showToast("Postingan berhasil ditambahkan!")
-
-                        // Navigasi ke BerandaActivity
-                        val intent = Intent(this@JualActivity, BerandaActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(intent)
-                        finish() // Menutup JualActivity
+                        Log.d("API Success", "Response: $postingan")
+                        finish()
                     } else {
-                        Log.e("API Error", "Gagal: ${response.errorBody()?.string()}")
-                        showToast("Gagal menambahkan postingan.")
+                        val errorMessage = response.errorBody()?.string() ?: "Gagal menambahkan postingan"
+                        Log.e("API Error", "Response Error: $errorMessage")
+                        showToast(errorMessage)
                     }
                 } else {
-                    Log.e("API Error", "Error: ${response.errorBody()?.string()}")
-                    showToast("Gagal menambahkan postingan.")
+                    val errorBody = response.errorBody()?.string() ?: "Error body kosong"
+                    Log.e("API Error", "Error code: ${response.code()}, Message: $errorBody")
+                    showToast("Gagal menambahkan postingan")
                 }
             }
 
-
             override fun onFailure(call: Call<ApiResponse<Postingan>>, t: Throwable) {
-                Log.e("API Failure", "Error: ${t.localizedMessage}")
-                showToast("Terjadi kesalahan saat menghubungi server.")
+                binding.btnJualSekarang.isEnabled = true
+                binding.btnJualSekarang.text = "Jual Sekarang"
+                Log.e("API Failure", "Error: ${t.localizedMessage}", t)
+                showToast("Terjadi kesalahan: ${t.localizedMessage}")
             }
+
         })
     }
 
@@ -258,6 +240,29 @@ class JualActivity : AppCompatActivity() {
 
     private fun updateRecyclerView() {
         imageAdapter.notifyDataSetChanged()
+    }
+
+    private fun searchLocation(query: String) {
+        ApiClientNominatim.instance.searchLocations(query).enqueue(object : Callback<List<NominatimResponse>> {
+            override fun onResponse(call: Call<List<NominatimResponse>>, response: Response<List<NominatimResponse>>) {
+                if (response.isSuccessful) {
+                    val locations = response.body()?.map { it.display_name } ?: emptyList()
+                    val adapter = ArrayAdapter(
+                        this@JualActivity,
+                        android.R.layout.simple_dropdown_item_1line,
+                        locations
+                    )
+                    binding.etLokasiProduk.setAdapter(adapter)
+                    if (binding.etLokasiProduk.hasFocus()) {
+                        binding.etLokasiProduk.showDropDown()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<NominatimResponse>>, t: Throwable) {
+                showToast("Gagal memuat lokasi: ${t.localizedMessage}")
+            }
+        })
     }
 
     private fun getFileFromUri(uri: Uri): File? {

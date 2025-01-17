@@ -88,7 +88,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun saveUserToSharedPreferences(userId: Int, userName: String) {
-        SharedPreferencesHelper.saveUserPreferences(this, userId, userName)
+        SharedPreferencesHelper.saveUserPreferences(this, userId, userName, token = "smmkdmskmsmdksmdks" )
         Log.d("LoginActivity", "Data tersimpan di SharedPreferences: ID=$userId, Name=$userName")
     }
 

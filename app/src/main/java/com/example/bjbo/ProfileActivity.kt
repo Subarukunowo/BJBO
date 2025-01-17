@@ -72,8 +72,8 @@ class ProfileActivity : AppCompatActivity() {
 
         // Tombol Logout
         binding.btnLogout.setOnClickListener {
-            Toast.makeText(this, "Logout Berhasil", Toast.LENGTH_SHORT).show()
-            // Tambahkan logika logout di sini
+            val intent = Intent(this, LogoutActivity::class.java)
+            startActivity(intent)
         }
     }
 }
