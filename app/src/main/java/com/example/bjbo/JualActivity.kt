@@ -2,13 +2,12 @@ package com.example.bjbo
 
 import ApiResponse
 import Postingan
+import android.R
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +26,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
+import com.example.bjbo.ui.PopupMessage
+import com.example.bjbo.ui.PopupSplashScreen
 
 class JualActivity : AppCompatActivity() {
 
@@ -60,7 +61,7 @@ class JualActivity : AppCompatActivity() {
 
         binding.btnTambahGambar.setOnClickListener {
             if (selectedImages.size >= MAX_IMAGES) {
-                showToast("Maksimal 8 gambar dapat dipilih.")
+                showPopupMessage("Maksimal 8 gambar dapat dipilih.")
             } else {
                 pickImage()
             }
@@ -92,27 +93,27 @@ class JualActivity : AppCompatActivity() {
 
         return when {
             name.isEmpty() -> {
-                showToast("Nama produk tidak boleh kosong")
+                showPopupMessage("Nama produk tidak boleh kosong")
                 false
             }
             price == null -> {
-                showToast("Harga tidak valid")
+                showPopupMessage("Harga tidak valid")
                 false
             }
             category.isEmpty() -> {
-                showToast("Kategori tidak boleh kosong")
+                showPopupMessage("Kategori tidak boleh kosong")
                 false
             }
             description.isEmpty() -> {
-                showToast("Deskripsi tidak boleh kosong")
+                showPopupMessage("Deskripsi tidak boleh kosong")
                 false
             }
             selectedLocation.isNullOrEmpty() -> {
-                showToast("Lokasi tidak boleh kosong")
+                showPopupMessage("Lokasi tidak boleh kosong")
                 false
             }
             selectedImages.isEmpty() -> {
-                showToast("Mohon tambahkan setidaknya satu gambar")
+                showPopupMessage("Mohon tambahkan setidaknya satu gambar")
                 false
             }
             else -> true
@@ -134,12 +135,12 @@ class JualActivity : AppCompatActivity() {
         val imageFile = imageUri?.let { getFileFromUri(it) }
 
         if (imageFile == null) {
-            showToast("Gagal memproses gambar")
+            showPopupMessage("Gagal memproses gambar")
             return
         }
 
         if (imageFile.length() > MAX_IMAGE_SIZE) {
-            showToast("Ukuran gambar terlalu besar (maksimal 2MB)")
+            showPopupMessage("Ukuran gambar terlalu besar (maksimal 2MB)")
             return
         }
 
@@ -180,30 +181,36 @@ class JualActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     if (responseBody?.success == true) {
-                        val postingan = responseBody.data
-                        showToast("Postingan berhasil ditambahkan!")
-                        Log.d("API Success", "Response: $postingan")
-                        finish()
+                        showPopupSplashScreen()
                     } else {
-                        val errorMessage = response.errorBody()?.string() ?: "Gagal menambahkan postingan"
-                        Log.e("API Error", "Response Error: $errorMessage")
-                        showToast(errorMessage)
+                        showPopupMessage("Gagal menambahkan postingan")
                     }
                 } else {
-                    val errorBody = response.errorBody()?.string() ?: "Error body kosong"
-                    Log.e("API Error", "Error code: ${response.code()}, Message: $errorBody")
-                    showToast("Gagal menambahkan postingan")
+                    showPopupMessage("Gagal menambahkan postingan")
                 }
             }
 
             override fun onFailure(call: Call<ApiResponse<Postingan>>, t: Throwable) {
                 binding.btnJualSekarang.isEnabled = true
                 binding.btnJualSekarang.text = "Jual Sekarang"
-                Log.e("API Failure", "Error: ${t.localizedMessage}", t)
-                showToast("Terjadi kesalahan: ${t.localizedMessage}")
+                showPopupMessage("Terjadi kesalahan: ${t.localizedMessage}")
             }
 
         })
+    }
+
+    private fun showPopupSplashScreen() {
+        val dialog = PopupSplashScreen(this)
+        dialog.setOnCloseListener {
+            startActivity(Intent(this, BerandaActivity::class.java))
+            finish()
+        }
+        dialog.show()
+    }
+
+    private fun showPopupMessage(message: String) {
+        val dialog = PopupMessage(this, message)
+        dialog.show()
     }
 
     private fun pickImage() {
@@ -249,7 +256,7 @@ class JualActivity : AppCompatActivity() {
                     val locations = response.body()?.map { it.display_name } ?: emptyList()
                     val adapter = ArrayAdapter(
                         this@JualActivity,
-                        android.R.layout.simple_dropdown_item_1line,
+                        R.layout.simple_dropdown_item_1line,
                         locations
                     )
                     binding.etLokasiProduk.setAdapter(adapter)
@@ -260,7 +267,7 @@ class JualActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<List<NominatimResponse>>, t: Throwable) {
-                showToast("Gagal memuat lokasi: ${t.localizedMessage}")
+                showPopupMessage("Gagal memuat lokasi: ${t.localizedMessage}")
             }
         })
     }
@@ -278,9 +285,5 @@ class JualActivity : AppCompatActivity() {
             e.printStackTrace()
             null
         }
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
