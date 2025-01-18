@@ -48,6 +48,7 @@
 
     <!-- Category Chips -->
     <HorizontalScrollView
+        android:id="@+id/chipCategoryScroll"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -97,15 +98,17 @@
 
     <!-- Fragment Container -->
     <FrameLayout
-        android:id="@+id/fragmentContainerVertical"
+        android:id="@+id/exploreFragmentContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@id/chipCamera"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintTop_toBottomOf="@id/chipCategoryScroll"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="NotSibling" />
+        tools:ignore="NotSibling"
+        tools:layout_editor_absoluteY="200dp" />
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
