@@ -1,12 +1,16 @@
 package com.example.bjbo
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bjbo.databinding.ActivityAccountBinding
 import com.example.bjbo.model.ProfileRequest
 import com.example.bjbo.model.User
 import com.example.bjbo.network.ApiClient
+import com.example.bjbo.database.SharedPreferencesHelper
+import com.example.bjbo.model.ApiResponse
+import com.example.bjbo.model.UserRespons
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +34,7 @@ class AccountActivity : AppCompatActivity() {
         }
     }
 
+
     private fun loadUserProfile() {
         val userId = getUserIdFromPreferences()
         if (userId == -1) {
@@ -37,25 +42,35 @@ class AccountActivity : AppCompatActivity() {
             return
         }
 
-        ApiClient.instance.getUserById(userId).enqueue(object : Callback<User> {
-            override fun onResponse(call: Call<User>, response: Response<User>) {
-                if (response.isSuccessful && response.body() != null) {
-                    currentUser = response.body()
-                    populateUserProfile(currentUser)
+        ApiClient.instance.getUserById(userId).enqueue(object : Callback<UserRespons> {
+            override fun onResponse(call: Call<UserRespons>, response: Response<UserRespons>) {
+                if (response.isSuccessful) {
+                    val userResponse = response.body()
+                    if (userResponse != null && userResponse.isSuccessful()) {
+                        val user = userResponse.data
+                        Log.d("AccountActivity", "Data user diterima: $user")
+                        currentUser = user
+                        populateUserProfile(user)
+                    } else {
+                        showToast(userResponse?.message ?: "Gagal memuat data profil.")
+                    }
                 } else {
-                    showToast("Gagal memuat data profil.")
+                    showToast("Gagal memuat data profil. Kode: ${response.code()}")
                 }
             }
 
-            override fun onFailure(call: Call<User>, t: Throwable) {
+            override fun onFailure(call: Call<UserRespons>, t: Throwable) {
                 showToast("Kesalahan jaringan: ${t.message}")
             }
         })
     }
 
+
     private fun populateUserProfile(user: User?) {
         user?.let {
             binding.apply {
+                tvName.text = it.name ?: "Tidak tersedia"
+                tvEmail.text = it.email ?: "Tidak tersedia"
                 tvFirstName.text = it.name ?: "Tidak tersedia"
                 tvEmailField.text = it.email ?: "Tidak tersedia"
                 tvGender.text = it.kelamin ?: "Tidak tersedia"
@@ -71,38 +86,44 @@ class AccountActivity : AppCompatActivity() {
             return
         }
 
-        // Data dari UI
         val profileRequest = ProfileRequest(
             name = binding.tvFirstName.text.toString(),
             email = binding.tvEmailField.text.toString(),
             nomor_hp = binding.tvPhone.text.toString(),
             kelamin = binding.tvGender.text.toString(),
             alamat = binding.tvAddress.text.toString(),
-            profile_picture = currentUser?.profile_picture // Tetap gunakan gambar yang lama jika tidak diubah
+            profile_picture = currentUser?.profile_picture
         )
 
-        // Panggil API
-        currentUser?.id?.let { userId ->
-            ApiClient.instance.updateUserProfile(userId, profileRequest).enqueue(object : Callback<User> {
-                override fun onResponse(call: Call<User>, response: Response<User>) {
-                    if (response.isSuccessful) {
-                        showToast("Profil berhasil diperbarui")
-                        loadUserProfile() // Memuat ulang profil
-                    } else {
-                        showToast("Gagal memperbarui profil. Kode: ${response.code()}")
-                    }
-                }
-
-                override fun onFailure(call: Call<User>, t: Throwable) {
-                    showToast("Kesalahan jaringan: ${t.message}")
-                }
-            })
+        val userId = getUserIdFromPreferences()
+        if (userId == -1) {
+            showToast("User ID tidak ditemukan. Harap login ulang.")
+            return
         }
+
+        ApiClient.instance.updateUserProfile(userId, profileRequest).enqueue(object : Callback<UserRespons> {
+            override fun onResponse(call: Call<UserRespons>, response: Response<UserRespons>) {
+                if (response.isSuccessful) {
+                    val userResponse = response.body()
+                    if (userResponse != null && userResponse.isSuccessful()) {
+                        showToast("Profil berhasil diperbarui")
+                        loadUserProfile()
+                    } else {
+                        showToast(userResponse?.message ?: "Gagal memperbarui profil.")
+                    }
+                } else {
+                    showToast("Gagal memperbarui profil. Kode: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<UserRespons>, t: Throwable) {
+                showToast("Kesalahan jaringan: ${t.message}")
+            }
+        })
     }
 
     private fun getUserIdFromPreferences(): Int {
-        // Implementasi untuk mengambil User ID dari SharedPreferences
-        return 1 // Contoh, ubah sesuai implementasi nyata
+        return SharedPreferencesHelper.getUserId(this)
     }
 
     private fun showToast(message: String) {
