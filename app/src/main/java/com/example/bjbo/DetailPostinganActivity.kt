@@ -1,5 +1,6 @@
 package com.example.bjbo
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,7 @@ import com.example.bjbo.databinding.ActivityDetailPostinganBinding
 import com.example.bjbo.fragment.UlasanListFragment
 import com.example.bjbo.model.ApiResponse
 import com.example.bjbo.model.Favorit
+
 import com.example.bjbo.model.Ulasan
 import com.example.bjbo.network.ApiClient
 import retrofit2.Call
@@ -25,7 +27,6 @@ class DetailPostinganActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailPostinganBinding
     private var isLiked = false
-    private val favoriteList = mutableListOf<Favorit>()
     private val apiService = ApiClient.instance
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +45,9 @@ class DetailPostinganActivity : AppCompatActivity() {
         val location = intent.getStringExtra("location") ?: "Unknown"
         val description = intent.getStringExtra("description") ?: "No description"
         val image = intent.getStringExtra("image") ?: ""
+        val postinganId = intent.getIntExtra("postingan_id", -1)
+
+        Log.d("DetailPostinganActivity", "ID postingan diterima: $postinganId")
 
         // Set data ke UI
         binding.tvPostinganName.text = name
@@ -52,17 +56,27 @@ class DetailPostinganActivity : AppCompatActivity() {
         binding.tvPostinganDescription.text = description
 
         // Load image menggunakan Glide
-        Glide.with(this)
-            .load(image) // URL gambar dari API
-            .into(binding.ivPostinganImage)
+        Glide.with(this).load(image).into(binding.ivPostinganImage)
+
+        // Validasi ID postingan
+        if (postinganId == -1) {
+            Log.e("DetailPostinganActivity", "ID postingan tidak valid!")
+            showToast("ID postingan tidak valid.")
+            return
+        }
+
+        // Muat ulasan berdasarkan postinganId
+        loadUlasanFromApi(postinganId)
+
         binding.etUserReview.setOnClickListener {
             navigateToUlasanActivity()
         }
-        // Tambahkan animasi pada ikon heart
+
+        // Setup ikon favorit
         val favorit = Favorit(
-            id = 1, // Sesuaikan ID favorit jika diperlukan
-            user_id = SharedPreferencesHelper.getUserId(this), // User ID (contoh)
-            postingan_id = SharedPreferencesHelper.getPostinganId(this),
+            id = 1,
+            user_id = SharedPreferencesHelper.getUserId(this),
+            postingan_id = postinganId,
             created_at = null,
             updated_at = null,
             user = null,
@@ -81,139 +95,90 @@ class DetailPostinganActivity : AppCompatActivity() {
     }
 
     private fun setupHeartIcon(heartIcon: ImageView, favorit: Favorit) {
-        // Cek status awal dari SharedPreferences
         isLiked = SharedPreferencesHelper.isFavoriteId(this, favorit.postingan_id)
-
-        // Set ikon sesuai status awal
         heartIcon.setImageResource(if (isLiked) R.drawable.ic_heart_filled else R.drawable.ic_heart)
 
         heartIcon.setOnClickListener {
-            // Muat animasi
             val animation = AnimationUtils.loadAnimation(this, R.anim.anim_heart_scale)
             heartIcon.startAnimation(animation)
 
-            // Toggle status like
             if (isLiked) {
-                heartIcon.setImageResource(R.drawable.ic_heart) // Ganti ikon jadi tidak di-like
-                removeFromFavorites(favorit) // Panggil fungsi untuk menghapus dari favorit
+                heartIcon.setImageResource(R.drawable.ic_heart)
+                removeFromFavorites(favorit)
             } else {
-                heartIcon.setImageResource(R.drawable.ic_heart_filled) // Ganti ikon jadi di-like
-                addToFavorites(favorit) // Panggil fungsi untuk menambahkan ke favorit
+                heartIcon.setImageResource(R.drawable.ic_heart_filled)
+                addToFavorites(favorit)
             }
             isLiked = !isLiked
         }
     }
 
-
     private fun removeFromFavorites(favorit: Favorit) {
-        if (favorit.id <= 0) {
-            Log.e("RemoveFromFavorites", "ID favorit tidak valid: ${favorit.id}")
-            showToast("Gagal menghapus dari favorit. ID tidak valid.")
-            return
-        }
-
         apiService.deleteFavorit(favorit.id.toLong()).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    // Hapus postingan_id dari SharedPreferences
                     SharedPreferencesHelper.removeFavoriteId(this@DetailPostinganActivity, favorit.postingan_id)
-
-                    // Hapus dari daftar lokal
-                    favoriteList.remove(favorit)
-
-                    showToast("Berhasil dihapus dari favorit dengan ID: ${favorit.id}")
-                    Log.d(
-                        "RemoveFromFavorites",
-                        "Berhasil menghapus favorit dengan ID: ${favorit.id}"
-                    )
+                    showToast("Berhasil menghapus dari favorit.")
                 } else {
-                    showToast("Gagal menghapus dari favorit: ${response.code()}")
-                    Log.e(
-                        "RemoveFromFavorites",
-                        "Gagal menghapus: ${response.errorBody()?.string()}"
-                    )
+                    showToast("Gagal menghapus dari favorit.")
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                showToast("Kesalahan: ${t.message}")
-                Log.e("RemoveFromFavorites", "Kesalahan: ${t.message}")
+                showToast("Kesalahan jaringan: ${t.message}")
             }
         })
     }
-    private fun loadUlasanList(postinganId: Int) {
-        apiService.getAllUlasans().enqueue(object : Callback<ApiResponse<List<Ulasan>>> {
-            override fun onResponse(
-                call: Call<ApiResponse<List<Ulasan>>>,
-                response: Response<ApiResponse<List<Ulasan>>>
-            ) {
-                if (response.isSuccessful) {
-                    val ulasanResponse = response.body()
-                    ulasanResponse?.data?.let { ulasans ->
-                        if (ulasans is List<Ulasan>) {
-                            // Log jumlah ulasan yang diterima
-                            Log.d("UlasanResponse", "Jumlah ulasan yang diterima: ${ulasans.size}")
-
-                            // Kirim ID postingan untuk memuat ulasan
-                            loadUlasanFragment(postinganId)
-                        } else {
-                            showToast("Format data ulasan tidak valid.")
-                            Log.e("UlasanResponse", "Data bukan List<Ulasan>")
-                        }
-                    } ?: run {
-                        showToast("Tidak ada ulasan untuk postingan ini.")
-                        Log.d("UlasanResponse", "Tidak ada ulasan yang tersedia untuk ID $postinganId")
-                    }
-                } else {
-                    showToast("Gagal memuat ulasan: ${response.message()}")
-                    Log.e("UlasanResponse", "Kesalahan memuat ulasan: ${response.message()}")
-                }
-            }
-
-            override fun onFailure(call: Call<ApiResponse<List<Ulasan>>>, t: Throwable) {
-                showToast("Kesalahan: ${t.message}")
-                Log.e("UlasanResponse", "Kesalahan jaringan: ${t.message}")
-            }
-        })
-    }
-
-    private fun loadUlasanFragment(postinganId: Int) {
-        Log.d("UlasanFragment", "Memuat ulasan untuk ID postingan: $postinganId")
-        val fragment = UlasanListFragment.newInstance(postinganId)
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.ulasanListFragmentContainer, fragment)
-            .commit()
-        loadUlasanList(postinganId) // Panggil metode untuk memuat ulasan
-        Log.d("UlasanFragment", "Fragment ulasan berhasil dimuat.")
-    }
-
 
     private fun addToFavorites(favorit: Favorit) {
         apiService.createFavorit(favorit).enqueue(object : Callback<Favorit> {
             override fun onResponse(call: Call<Favorit>, response: Response<Favorit>) {
                 if (response.isSuccessful) {
-                    response.body()?.let { favoritResponse ->
-                        // Perbarui ID favorit
-                        favorit.id = favoritResponse.id
-
-                        // Tambahkan postingan_id ke SharedPreferences
-                        SharedPreferencesHelper.addFavoriteId(this@DetailPostinganActivity, favoritResponse.postingan_id)
-
-                        // Tambahkan ke daftar lokal (jika ada)
-                        favoriteList.add(favoritResponse)
-
-                        showToast("Berhasil ditambahkan ke favorit dengan ID: ${favoritResponse.id}")
-                        Log.d("AddToFavorites", "Favorit berhasil ditambahkan: ${favoritResponse.id}")
+                    response.body()?.let {
+                        SharedPreferencesHelper.addFavoriteId(this@DetailPostinganActivity, it.postingan_id)
+                        showToast("Berhasil ditambahkan ke favorit.")
                     }
                 } else {
-                    showToast("Gagal menambahkan ke favorit")
-                    Log.e("AddToFavorites", "Respons gagal: ${response.code()}")
+                    showToast("Gagal menambahkan ke favorit.")
                 }
             }
 
             override fun onFailure(call: Call<Favorit>, t: Throwable) {
-                showToast("Kesalahan: ${t.message}")
-                Log.e("AddToFavorites", "Kesalahan API: ${t.message}")
+                showToast("Kesalahan jaringan: ${t.message}")
+            }
+        })
+    }
+
+    private fun loadUlasanFromApi(postinganId: Int) {
+        apiService.getUlasansByPostinganId(postinganId).enqueue(object : Callback<ApiResponse<List<Ulasan>>> {
+            override fun onResponse(
+                call: Call<ApiResponse<List<Ulasan>>>,
+                response: Response<ApiResponse<List<Ulasan>>>
+            ) {
+                if (response.isSuccessful) {
+                    val ulasans = response.body()?.data
+                    if (!ulasans.isNullOrEmpty()) {
+                        Log.d("LoadUlasanFromApi", "Berhasil memuat ulasan: $ulasans")
+
+                        // Tampilkan ulasan di fragment
+                        val fragment = UlasanListFragment.newInstance(postinganId)
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.ulasanListFragmentContainer, fragment)
+                            .commit()
+                    } else {
+                        Log.w("LoadUlasanFromApi", "Tidak ada ulasan untuk postingan ini.")
+                        showToast("Belum ada ulasan untuk postingan ini.")
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("LoadUlasanFromApi", "Gagal memuat ulasan: ${response.code()} - $errorBody")
+                    showToast("Gagal memuat ulasan: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse<List<Ulasan>>>, t: Throwable) {
+                Log.e("LoadUlasanFromApi", "Kesalahan jaringan: ${t.message}", t)
+                showToast("Kesalahan jaringan: ${t.message}")
             }
         })
     }
@@ -244,6 +209,4 @@ class DetailPostinganActivity : AppCompatActivity() {
         val intent = Intent(this, UlasanActivity::class.java)
         startActivity(intent)
     }
-
-
 }

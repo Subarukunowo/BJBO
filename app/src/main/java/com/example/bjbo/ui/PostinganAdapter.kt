@@ -1,4 +1,6 @@
 import android.content.Context
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,10 +9,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.bjbo.R
-import android.content.Intent
+import com.example.bjbo.DetailPostinganActivity
+import com.example.bjbo.database.SharedPreferencesHelper
 import java.text.NumberFormat
 import java.util.Locale
-import com.example.bjbo.DetailPostinganActivity
 
 class PostinganAdapter(
     private val context: Context,
@@ -32,32 +34,37 @@ class PostinganAdapter(
     override fun onBindViewHolder(holder: PostinganViewHolder, position: Int) {
         val postingan = postinganList[position]
 
-        // Set data ke TextView dengan pengecekan null
+        // Set data ke TextView
         holder.nameTextView.text = postingan.name ?: "Tidak ada nama"
 
-        // Format harga menggunakan NumberFormat dan pengecekan null
+        // Format harga menggunakan NumberFormat
         val formattedPrice = try {
-            NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(postingan.price ?: 0.0)
+            val price = postingan.price ?: 0.0 // Default ke 0 jika null
+            NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(price)
         } catch (e: Exception) {
             "Harga tidak tersedia"
         }
         holder.priceTextView.text = formattedPrice
 
-        // Set lokasi dengan pengecekan null
+        // Set lokasi
         holder.locationTextView.text = postingan.lokasi ?: "Lokasi tidak tersedia"
 
-        // Memuat gambar menggunakan Glide dengan penanganan error
+        // Memuat gambar menggunakan Glide
         Glide.with(context)
             .load(postingan.image)
-            .placeholder(R.drawable.baseline_image_24)
-            .error(R.drawable.baseline_broken_image_24)
+            .placeholder(R.drawable.baseline_image_24) // Placeholder saat gambar dimuat
+            .error(R.drawable.baseline_broken_image_24) // Gambar error jika gagal memuat
             .into(holder.imageView)
 
         // Navigasi ke DetailPostinganActivity saat item diklik
         holder.itemView.setOnClickListener {
+            SharedPreferencesHelper.savePostinganId(context, postingan.id)
+            Log.d("PostinganAdapter", "postingan_id yang disimpan: ${postingan.id}")
+
             val intent = Intent(context, DetailPostinganActivity::class.java).apply {
+                putExtra("postingan_id", postingan.id) // Mengirim postingan_id
                 putExtra("name", postingan.name)
-                putExtra("price", formattedPrice)
+                putExtra("price", postingan.price) // Mengirim nilai asli dari postingan.price
                 putExtra("location", postingan.lokasi)
                 putExtra("description", postingan.description)
                 putExtra("image", postingan.image)

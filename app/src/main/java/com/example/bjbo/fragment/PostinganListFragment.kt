@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bjbo.R
+import com.example.bjbo.model.ApiResponse
 import com.example.bjbo.network.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -39,7 +40,7 @@ class PostinganListFragment : Fragment() {
     }
 
     companion object {
-        private const val ARG_POSTINGAN_LIST = "postinganList"
+
 
         fun newInstance(postinganList: MutableList<Postingan>): PostinganListFragment {
             val fragment = PostinganListFragment()

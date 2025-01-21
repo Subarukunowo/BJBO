@@ -1,4 +1,5 @@
 package com.example.bjbo.fragment
+
 import Postingan
 import PostinganAdapter
 import android.annotation.SuppressLint
@@ -9,12 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bjbo.R
-
 import com.example.bjbo.model.ApiResponse
-
 import com.example.bjbo.network.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -38,8 +37,11 @@ class ExplorePostinganFragment : Fragment() {
 
     private fun setupRecyclerView(view: View) {
         recyclerView = view.findViewById(R.id.recyclerViewExplore)
-        recyclerView.layoutManager = LinearLayoutManager(context) // Menggunakan LinearLayoutManager
-        postinganAdapter = PostinganAdapter(requireContext(), postinganList)
+
+        // Atur GridLayoutManager dengan 4 kolom
+        recyclerView.layoutManager = GridLayoutManager(context, 2)
+
+
         recyclerView.adapter = postinganAdapter
     }
 
@@ -78,12 +80,21 @@ class ExplorePostinganFragment : Fragment() {
 
     private fun updatePostinganList(data: List<Postingan>) {
         postinganList.clear()
-        data.forEachIndexed { index, postingan ->
+
+        // Filter data hanya untuk postingan yang disetujui
+        val approvedPostingan = data.filter { it.status == "disetujui" }
+
+        approvedPostingan.forEachIndexed { index, postingan ->
+            // Update URL gambar jika diperlukan
             postingan.image = ApiClient.getFullimageUrl(postingan.image)
             Log.d("Image URL", "Position $index: ${postingan.image}")
         }
-        postinganList.addAll(data)
+
+        postinganList.addAll(approvedPostingan)
         postinganAdapter.notifyDataSetChanged()
+
+        // Log jumlah postingan yang ditampilkan
+        Log.d("Postingan Update", "Total approved postingan: ${approvedPostingan.size}")
     }
 
     private fun showToast(message: String) {

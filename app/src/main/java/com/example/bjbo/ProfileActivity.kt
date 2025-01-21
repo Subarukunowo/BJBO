@@ -18,6 +18,7 @@ class ProfileActivity : AppCompatActivity() {
 
         // Klik untuk menutup aktivitas (Close Icon)
         binding.closeIcon.setOnClickListener {
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             finish() // Menutup aktivitas
         }
 
@@ -28,6 +29,7 @@ class ProfileActivity : AppCompatActivity() {
             Toast.makeText(this, "Menuju Akun Saya", Toast.LENGTH_SHORT).show()
             // Tambahkan intent jika ada activity untuk Akun Saya
             val intent = Intent(this, AccountActivity::class.java)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             startActivity(intent)
 
         }
@@ -35,24 +37,28 @@ class ProfileActivity : AppCompatActivity() {
         // Navigasi ke "Notifikasi"
         binding.ivNotifikasi.setOnClickListener {
             Toast.makeText(this, "Menuju Notifikasi", Toast.LENGTH_SHORT).show()
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             // Tambahkan intent jika ada activity untuk Notifikasi
         }
 
         // Navigasi ke "Produk Dijual"
         binding.ivProdukDijual.setOnClickListener {
             Toast.makeText(this, "Menuju Produk Dijual", Toast.LENGTH_SHORT).show()
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             // Tambahkan intent jika ada activity untuk Produk Dijual
         }
 
         // Navigasi ke "Produk Disukai"
         binding.ivProdukDisukai.setOnClickListener {
             Toast.makeText(this, "Menuju Produk Disukai", Toast.LENGTH_SHORT).show()
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             // Tambahkan intent jika ada activity untuk Produk Disukai
         }
 
         // Navigasi ke "Orderan Saya"
         binding.ivOrderanSaya.setOnClickListener {
             Toast.makeText(this, "Menuju Orderan Saya", Toast.LENGTH_SHORT).show()
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             // Tambahkan intent jika ada activity untuk Orderan Saya
         }
 
@@ -61,18 +67,21 @@ class ProfileActivity : AppCompatActivity() {
             Toast.makeText(this, "Menuju Transaksi Saya", Toast.LENGTH_SHORT).show()
             // Tambahkan intent untuk TransaksiActivity
             val intent = Intent(this, TransaksiActivity::class.java)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             startActivity(intent)
         }
 
         // Tombol Settings
         binding.btnSettings.setOnClickListener {
             Toast.makeText(this, "Menuju Settings", Toast.LENGTH_SHORT).show()
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             // Tambahkan intent jika ada activity untuk Settings
         }
 
         // Tombol Logout
         binding.btnLogout.setOnClickListener {
             val intent = Intent(this, LogoutActivity::class.java)
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             startActivity(intent)
         }
     }

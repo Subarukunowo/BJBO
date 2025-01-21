@@ -1,15 +1,15 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="170dp"
+    android:layout_height="220dp"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="229dp"
         android:orientation="vertical">
 
         <!-- Gambar Produk -->
@@ -17,32 +17,34 @@
             android:id="@+id/ivPostinganImage"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:scaleType="centerCrop"
-            android:background="@drawable/bg_rounded_image" />
+            android:background="@drawable/bg_rounded_image"
+            android:scaleType="centerCrop" />
 
         <!-- Detail Produk -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="8dp">
 
             <!-- Nama Produk -->
             <TextView
                 android:id="@+id/tvPostinganName"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:text="Nama Produk"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="#000000" />
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <!-- Lokasi dan Harga Produk -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="4dp">
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
 
                 <!-- Ikon Lokasi -->
                 <ImageView
@@ -50,8 +52,9 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_marginEnd="4dp"
-                    android:src="@drawable/ic_lokasi"
-                    android:contentDescription="Ikon Lokasi" />
+
+                    android:contentDescription="Ikon Lokasi"
+                    android:src="@drawable/ic_lokasi" />
 
                 <!-- Lokasi -->
                 <TextView
@@ -59,9 +62,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:text="Lokasi"
-                    android:textSize="14sp"
-                    android:textColor="#808080" />
+                    android:textColor="#808080"
+                    android:textSize="12sp" />
 
                 <!-- Harga -->
                 <TextView
@@ -69,10 +74,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Rp100"
-                    android:textStyle="bold"
+                    android:textColor="#FF6347"
                     android:textSize="14sp"
-                    android:textColor="#FF6347" />
+                    android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>

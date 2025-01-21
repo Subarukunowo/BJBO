@@ -1,6 +1,6 @@
 package com.example.bjbo
 
-import ApiResponse
+
 import Postingan
 import android.R
 import android.app.Activity
@@ -13,6 +13,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bjbo.database.SharedPreferencesHelper
 import com.example.bjbo.databinding.ActivityJualBinding
+import com.example.bjbo.model.ApiResponse
 import com.example.bjbo.model.NominatimResponse
 import com.example.bjbo.network.ApiClient
 import com.example.bjbo.network.ApiClientNominatim

@@ -3,7 +3,6 @@ package com.example.bjbo
 import Postingan
 import PostinganListFragment
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -31,40 +30,25 @@ class BerandaActivity : AppCompatActivity() {
         binding = ActivityBerandaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Ambil userId dan userName dari SharedPreferences
         val userId = SharedPreferencesHelper.getUserId(this)
         val userName = SharedPreferencesHelper.getUserName(this)
 
-        // Logging untuk debugging
-        Log.d("BerandaActivity", "User ID: $userId")
-        Log.d("BerandaActivity", "User Name: $userName")
-
         if (userId == -1) {
-            Log.e("BerandaActivity", "User ID tidak valid. Mengarahkan ke LoginActivity.")
             Toast.makeText(this, "Silakan login kembali.", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, LoginActivity::class.java))
             finish()
-        } else {
-            binding.tvWelcome.text = "Hey, $userName!"
+            return
         }
 
-        // Listener lainnya
+        binding.tvWelcome.text = "Hey, $userName!"
 
-        // Listener untuk ikon kamera
-        binding.ivCamera.setOnClickListener {
-            checkCameraPermission()
-        }
+        binding.ivCamera.setOnClickListener { checkCameraPermission() }
 
-        // Listener untuk tombol JUAL
         binding.btnJual.setOnClickListener {
-            Toast.makeText(this, "Tombol JUAL diklik!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, JualActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, JualActivity::class.java))
         }
 
-        // Listener untuk pencarian
-        binding.searchBar.setOnEditorActionListener { textView, actionId, keyEvent ->
+        binding.searchBar.setOnEditorActionListener { textView, _, _ ->
             val keyword = textView.text.toString().trim()
             if (keyword.isNotEmpty()) {
                 searchPostingan(keyword)
@@ -74,7 +58,6 @@ class BerandaActivity : AppCompatActivity() {
             true
         }
 
-        // Tambahkan fragment PostinganListFragment
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 replace(
@@ -85,13 +68,12 @@ class BerandaActivity : AppCompatActivity() {
             }
         }
 
-        // Listener untuk bottom navigation
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> true
                 R.id.nav_explore -> {
-                    val intent = Intent(this, ExploreActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(this, ExploreActivity::class.java))
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                     true
                 }
                 R.id.menu_camera -> {
@@ -99,13 +81,13 @@ class BerandaActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_favorite -> {
-                    val intent = Intent(this, FavoriteActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(this, FavoriteActivity::class.java))
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                     true
                 }
                 R.id.nav_profile -> {
-                    val intent = Intent(this, ProfileActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                     true
                 }
                 else -> false
@@ -115,13 +97,9 @@ class BerandaActivity : AppCompatActivity() {
 
     private fun searchPostingan(keyword: String) {
         ApiClient.instance.searchPostingan(keyword).enqueue(object : Callback<List<Postingan>> {
-            override fun onResponse(
-                call: Call<List<Postingan>>,
-                response: Response<List<Postingan>>
-            ) {
+            override fun onResponse(call: Call<List<Postingan>>, response: Response<List<Postingan>>) {
                 if (response.isSuccessful) {
                     val results = response.body()
-                    Log.d("BerandaActivity", "Hasil pencarian: ${results?.size} postingan ditemukan.")
                     if (!results.isNullOrEmpty()) {
                         postinganList.clear()
                         postinganList.addAll(results)
@@ -132,17 +110,14 @@ class BerandaActivity : AppCompatActivity() {
                             )
                         }
                     } else {
-                        Log.d("BerandaActivity", "Tidak ada hasil ditemukan untuk keyword: $keyword")
                         Toast.makeText(this@BerandaActivity, "Tidak ada hasil ditemukan.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Log.e("BerandaActivity", "Gagal memuat hasil pencarian: ${response.code()}")
                     Toast.makeText(this@BerandaActivity, "Gagal memuat hasil pencarian", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<List<Postingan>>, t: Throwable) {
-                Log.e("BerandaActivity", "Kesalahan jaringan: ${t.message}")
                 Toast.makeText(this@BerandaActivity, "Kesalahan jaringan: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
@@ -152,11 +127,7 @@ class BerandaActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_PERMISSION_CODE
-            )
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE)
         } else {
             openCamera()
         }

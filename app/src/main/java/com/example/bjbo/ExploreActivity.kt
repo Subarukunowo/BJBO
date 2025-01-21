@@ -1,11 +1,11 @@
 package com.example.bjbo
 
-import PostinganListFragment
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import com.example.bjbo.databinding.ActivityExploreBinding
+import com.example.bjbo.fragment.ExplorePostinganFragment
 
 class ExploreActivity : AppCompatActivity() {
 
@@ -24,30 +24,30 @@ class ExploreActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_home -> {
                     startActivity(Intent(this, BerandaActivity::class.java))
-                    overridePendingTransition(0, 0)
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                     true
                 }
                 R.id.nav_explore -> true
                 R.id.nav_favorite -> {
                     startActivity(Intent(this, FavoriteActivity::class.java))
-                    overridePendingTransition(0, 0)
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                     true
                 }
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
-                    overridePendingTransition(0, 0)
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
                     true
                 }
                 else -> false
             }
         }
 
-        // Tambahkan fragment PostinganFragmentVertical
+        // Menambahkan fragment ExplorePostinganFragment ke container baru
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 replace(
-                    R.id.fragmentContainerVertical, // ID sesuai dengan layout XML
-                  PostinganListFragment()
+                    R.id.exploreFragmentContainer, // ID yang sesuai dengan layout baru
+                    ExplorePostinganFragment() // Menggunakan fragment Explore
                 )
             }
         }

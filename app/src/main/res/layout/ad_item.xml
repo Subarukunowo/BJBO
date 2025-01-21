@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Gambar Iklan -->
+        <ImageView
+            android:id="@+id/ivAdImage"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/iklan9" />
+
+        <!-- Judul Iklan -->
+        <TextView
+            android:id="@+id/tvAdTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="Promo Spesial Bulan Ini!"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- Deskripsi Iklan -->
+        <TextView
+            android:id="@+id/tvAdDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Dapatkan diskon hingga 50% untuk semua produk di toko kami. Berlaku hingga akhir bulan."
+            android:textColor="#666666"
+            android:textSize="16sp" />
+
+        <!-- Tombol Aksi -->
+        <Button
+            android:id="@+id/btnAdAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            android:text="Lihat Penawaran"
+            android:backgroundTint="#FF5722"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

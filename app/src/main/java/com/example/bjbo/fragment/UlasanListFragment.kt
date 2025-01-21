@@ -1,6 +1,7 @@
 package com.example.bjbo.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bjbo.databinding.FragmentUlasanListBinding
+import com.example.bjbo.model.ApiResponse
 import com.example.bjbo.model.Ulasan
 import com.example.bjbo.network.ApiClient
 import com.example.bjbo.ui.UlasanAdapter
@@ -36,8 +38,15 @@ class UlasanListFragment : Fragment() {
         // Setup RecyclerView
         setupRecyclerView()
 
-        // Load ulasan from API
-        loadUlasan()
+        // Ambil postinganId dari arguments
+        val postinganId = arguments?.getInt(ARG_POSTINGAN_ID) ?: -1
+        Log.d("UlasanListFragment", "postinganId yang digunakan: $postinganId")
+
+        if (postinganId != -1) {
+            loadUlasanFromApi(postinganId)
+        } else {
+            showEmptyState("ID postingan tidak valid.")
+        }
     }
 
     private fun setupRecyclerView() {
@@ -48,38 +57,63 @@ class UlasanListFragment : Fragment() {
         }
     }
 
-    private fun loadUlasan() {
-        // Make API call
-        ApiClient.instance.getAllUlasans().enqueue(object : Callback<List<Ulasan>> {
-            override fun onResponse(call: Call<List<Ulasan>>, response: Response<List<Ulasan>>) {
-                if (response.isSuccessful && !response.body().isNullOrEmpty()) {
-                    // Populate RecyclerView with API data
-                    ulasanList.clear()
-                    ulasanList.addAll(response.body()!!)
-                    ulasanAdapter.notifyDataSetChanged()
-                    binding.tvErrorMessage.visibility = View.GONE
+    private fun loadUlasanFromApi(postinganId: Int) {
+        ApiClient.instance.getUlasansByPostinganId(postinganId).enqueue(object : Callback<ApiResponse<List<Ulasan>>> {
+            override fun onResponse(
+                call: Call<ApiResponse<List<Ulasan>>>,
+                response: Response<ApiResponse<List<Ulasan>>>
+            ) {
+                if (response.isSuccessful && response.body()?.success == true) {
+                    val data = response.body()?.data
+                    Log.d("UlasanListFragment", "Data ulasan diterima: $data")
+                    if (!data.isNullOrEmpty()) {
+                        showUlasans(data)
+                    } else {
+                        showEmptyState("Belum ada ulasan untuk postingan ini.")
+                    }
                 } else {
-                    // Handle empty or unsuccessful response
-                    ulasanList.clear()
-                    ulasanAdapter.notifyDataSetChanged()
-                    binding.tvErrorMessage.visibility = View.VISIBLE
-                    binding.tvErrorMessage.text = "Belum ada ulasan."
+                    showEmptyState("Gagal memuat ulasan. Kesalahan server.")
                 }
             }
 
-            override fun onFailure(call: Call<List<Ulasan>>, t: Throwable) {
-                // Handle network error
-                binding.tvErrorMessage.visibility = View.VISIBLE
-                binding.tvErrorMessage.text = "Gagal memuat ulasan: ${t.localizedMessage}"
-                ulasanList.clear()
-                ulasanAdapter.notifyDataSetChanged()
+            override fun onFailure(call: Call<ApiResponse<List<Ulasan>>>, t: Throwable) {
+                showEmptyState("Kesalahan jaringan: ${t.localizedMessage}")
                 Toast.makeText(requireContext(), "Kesalahan jaringan: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
+    private fun showUlasans(ulasans: List<Ulasan>) {
+        ulasanList.clear()
+        ulasanList.addAll(ulasans)
+        ulasanAdapter.notifyDataSetChanged()
+        binding.tvErrorMessage.visibility = View.GONE
+        binding.recyclerViewUlasan.visibility = View.VISIBLE
+    }
+
+    private fun showEmptyState(message: String) {
+        binding.tvErrorMessage.text = message
+        binding.tvErrorMessage.visibility = View.VISIBLE
+        binding.recyclerViewUlasan.visibility = View.GONE
+        ulasanList.clear()
+        ulasanAdapter.notifyDataSetChanged()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val ARG_POSTINGAN_ID = "arg_postingan_id"
+
+        fun newInstance(postinganId: Int): UlasanListFragment {
+            val fragment = UlasanListFragment()
+            val args = Bundle().apply {
+                putInt(ARG_POSTINGAN_ID, postinganId)
+            }
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

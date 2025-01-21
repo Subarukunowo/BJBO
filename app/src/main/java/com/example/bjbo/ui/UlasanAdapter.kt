@@ -1,46 +1,47 @@
 package com.example.bjbo.ui
 
-
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bjbo.R
 import com.example.bjbo.model.Ulasan
 
-class UlasanAdapter(private val ulasanList: List<Ulasan>) :
-    RecyclerView.Adapter<UlasanAdapter.UlasanViewHolder>() {
+class UlasanAdapter(
+    private val ulasanList: List<Ulasan>
+) : RecyclerView.Adapter<UlasanAdapter.UlasanViewHolder>() {
+
+    inner class UlasanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val tvUser: TextView = itemView.findViewById(R.id.tvUser)
+        private val rbRating: RatingBar = itemView.findViewById(R.id.rbRating)
+        private val tvKomentar: TextView = itemView.findViewById(R.id.tvKomentar)
+        private val tvCreatedAt: TextView = itemView.findViewById(R.id.tvTanggal)
+
+        fun bind(ulasan: Ulasan) {
+            // Set nama user atau default jika null
+            tvUser.text = ulasan.user?.name ?: "Unknown User"
+
+            // Set nilai rating
+            rbRating.rating = ulasan.rating.toFloat()
+
+            // Set komentar
+            tvKomentar.text = ulasan.komentar
+
+            // Set tanggal pembuatan atau default jika null
+            tvCreatedAt.text = ulasan.created_at ?: "Unknown"
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UlasanViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_ulasan, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_ulasan, parent, false)
         return UlasanViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: UlasanViewHolder, position: Int) {
-        val ulasan = ulasanList[position]
-        holder.bind(ulasan)
+        holder.bind(ulasanList[position])
     }
 
     override fun getItemCount(): Int = ulasanList.size
-
-    class UlasanViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)
-        private val timeTextView: TextView = itemView.findViewById(R.id.timeTextView)
-        private val reviewTextView: TextView = itemView.findViewById(R.id.reviewTextView)
-        private val ratingBar: RatingBar = itemView.findViewById(R.id.rbUserRating)
-
-        fun bind(ulasan: Ulasan) {
-            nameTextView.text = "User ${ulasan.user_id}" // Contoh: sesuaikan dengan data user
-            timeTextView.text = ulasan.created_at
-            reviewTextView.text = ulasan.komentar
-
-            // Set rating value
-            ratingBar.rating = ulasan.rating.toFloat()
-        }
-    }
 }
