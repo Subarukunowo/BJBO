@@ -35,36 +35,34 @@ class PostinganAdapter(
         val postingan = postinganList[position]
 
         // Set data ke TextView
-        holder.nameTextView.text = postingan.name ?: "Tidak ada nama"
+        holder.nameTextView.text = postingan.name
 
         // Format harga menggunakan NumberFormat
         val formattedPrice = try {
-            val price = postingan.price ?: 0.0 // Default ke 0 jika null
-            NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(price)
+            NumberFormat.getCurrencyInstance(Locale("id", "ID")).format(postingan.price)
         } catch (e: Exception) {
             "Harga tidak tersedia"
         }
         holder.priceTextView.text = formattedPrice
 
         // Set lokasi
-        holder.locationTextView.text = postingan.lokasi ?: "Lokasi tidak tersedia"
+        holder.locationTextView.text = postingan.lokasi
 
         // Memuat gambar menggunakan Glide
         Glide.with(context)
             .load(postingan.image)
-            .placeholder(R.drawable.baseline_image_24) // Placeholder saat gambar dimuat
-            .error(R.drawable.baseline_broken_image_24) // Gambar error jika gagal memuat
+            .placeholder(R.drawable.baseline_image_24)
+            .error(R.drawable.baseline_broken_image_24)
             .into(holder.imageView)
 
         // Navigasi ke DetailPostinganActivity saat item diklik
         holder.itemView.setOnClickListener {
-            SharedPreferencesHelper.savePostinganId(context, postingan.id)
             Log.d("PostinganAdapter", "postingan_id yang disimpan: ${postingan.id}")
 
             val intent = Intent(context, DetailPostinganActivity::class.java).apply {
-                putExtra("postingan_id", postingan.id) // Mengirim postingan_id
+                putExtra("postingan_id", postingan.id)
                 putExtra("name", postingan.name)
-                putExtra("price", postingan.price) // Mengirim nilai asli dari postingan.price
+                putExtra("price", postingan.price) // `postingan.price` sekarang bertipe Long
                 putExtra("location", postingan.lokasi)
                 putExtra("description", postingan.description)
                 putExtra("image", postingan.image)
@@ -72,6 +70,8 @@ class PostinganAdapter(
             context.startActivity(intent)
         }
     }
+
+
 
     override fun getItemCount(): Int {
         return postinganList.size

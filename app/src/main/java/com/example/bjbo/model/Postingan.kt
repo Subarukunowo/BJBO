@@ -8,7 +8,7 @@ data class ApiResponse<T>(
 data class Postingan(
     val id: Int,
     val name: String,
-    val price: Int,
+    val price: Long,
     val category: String,
     val description: String,
     var image: String?,

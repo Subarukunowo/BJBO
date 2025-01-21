@@ -7,6 +7,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -88,9 +89,14 @@ class JualActivity : AppCompatActivity() {
 
     private fun validateInput(): Boolean {
         val name = binding.etName.text.toString()
-        val price = binding.etPrice.text.toString().toLongOrNull()
+        val priceText = binding.etPrice.text.toString()
+        val price = binding.etPrice.text.toString().toLong()
+        Log.d("JualActivity", "Nama Produk: $name")
+        Log.d("JualActivity", "Input Harga (Text): $priceText")
+        Log.d("JualActivity", "Harga Setelah Konversi (Long): $price")
         val category = binding.etCategory.text.toString()
         val description = binding.etDescription.text.toString()
+
 
         return when {
             name.isEmpty() -> {

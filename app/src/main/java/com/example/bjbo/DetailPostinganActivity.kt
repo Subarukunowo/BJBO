@@ -36,12 +36,7 @@ class DetailPostinganActivity : AppCompatActivity() {
 
         // Ambil data dari Intent
         val name = intent.getStringExtra("name") ?: "Unknown"
-        val priceString = intent.getStringExtra("price") ?: "0"
-        val price = try {
-            NumberFormat.getCurrencyInstance(Locale("id", "ID")).parse(priceString)?.toLong() ?: 0L
-        } catch (e: Exception) {
-            0L
-        }
+        val price = intent.getLongExtra("price", 0L) // Ubah getIntExtra ke getLongExtra
         val location = intent.getStringExtra("location") ?: "Unknown"
         val description = intent.getStringExtra("description") ?: "No description"
         val image = intent.getStringExtra("image") ?: ""
@@ -68,7 +63,8 @@ class DetailPostinganActivity : AppCompatActivity() {
         // Muat ulasan berdasarkan postinganId
         loadUlasanFromApi(postinganId)
 
-        binding.etUserReview.setOnClickListener {
+
+    binding.etUserReview.setOnClickListener {
             navigateToUlasanActivity()
         }
 
@@ -193,7 +189,7 @@ class DetailPostinganActivity : AppCompatActivity() {
     ) {
         val intent = Intent(this, PembayaranActivity::class.java).apply {
             putExtra("name", name)
-            putExtra("price", price)
+            putExtra("price", price) // Kirim harga sebagai Int
             putExtra("location", location)
             putExtra("description", description)
             putExtra("image", image)
