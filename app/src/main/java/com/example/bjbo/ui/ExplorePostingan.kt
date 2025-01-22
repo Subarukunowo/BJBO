@@ -10,28 +10,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.bjbo.R
 import com.example.bjbo.DetailPostinganActivity
-import com.example.bjbo.database.SharedPreferencesHelper
 import java.text.NumberFormat
 import java.util.Locale
 
-class PostinganAdapter(
+class ExplorePostinganAdapter(
     private val context: Context,
     private val postinganList: List<Postingan>
-) : RecyclerView.Adapter<PostinganAdapter.PostinganViewHolder>() {
+) : RecyclerView.Adapter<ExplorePostinganAdapter.ExplorePostinganViewHolder>() {
 
-    inner class PostinganViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ExplorePostinganViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.ivPostinganImage)
         val nameTextView: TextView = itemView.findViewById(R.id.tvPostinganName)
         val priceTextView: TextView = itemView.findViewById(R.id.tvPostinganPrice)
         val locationTextView: TextView = itemView.findViewById(R.id.tvPostinganLocation)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostinganViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorePostinganViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.item_postingan, parent, false)
-        return PostinganViewHolder(view)
+        return ExplorePostinganViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: PostinganViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ExplorePostinganViewHolder, position: Int) {
         val postingan = postinganList[position]
 
         // Set data ke TextView
@@ -57,7 +56,7 @@ class PostinganAdapter(
 
         // Navigasi ke DetailPostinganActivity saat item diklik
         holder.itemView.setOnClickListener {
-            Log.d("PostinganAdapter", "postingan_id yang disimpan: ${postingan.id}")
+            Log.d("ExplorePostinganAdapter", "postingan_id yang disimpan: ${postingan.id}")
 
             val intent = Intent(context, DetailPostinganActivity::class.java).apply {
                 putExtra("postingan_id", postingan.id)
@@ -70,8 +69,6 @@ class PostinganAdapter(
             context.startActivity(intent)
         }
     }
-
-
 
     override fun getItemCount(): Int {
         return postinganList.size

@@ -59,6 +59,9 @@ class DetailPostinganActivity : AppCompatActivity() {
             showToast("ID postingan tidak valid.")
             return
         }
+        binding.ivBack.setOnClickListener {
+            finish()
+        }
 
         // Muat ulasan berdasarkan postinganId
         loadUlasanFromApi(postinganId)
@@ -67,6 +70,7 @@ class DetailPostinganActivity : AppCompatActivity() {
     binding.etUserReview.setOnClickListener {
             navigateToUlasanActivity()
         }
+
 
         // Setup ikon favorit
         val favorit = Favorit(

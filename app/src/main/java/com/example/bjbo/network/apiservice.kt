@@ -78,7 +78,7 @@ fun getAllFavorit(): Call<List<Favorit>>
     fun searchPostingan(@Query("keyword") keyword: String): Call<List<Postingan>>
 
     @GET("postingan")
-    fun getAllPostingan(): Call<ApiResponse<List<Postingan>>>
+    fun getAllPostingan():  Call<ApiResponse<List<Postingan>>>
 
     @Multipart
     @POST("postingan")

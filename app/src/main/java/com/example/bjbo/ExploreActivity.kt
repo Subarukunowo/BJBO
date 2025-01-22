@@ -46,8 +46,8 @@ class ExploreActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 replace(
-                    R.id.exploreFragmentContainer, // ID yang sesuai dengan layout baru
-                    ExplorePostinganFragment() // Menggunakan fragment Explore
+                    R.id.exploreFragmentContainer, // Pastikan ID ini sama dengan layout XML
+                    ExplorePostinganFragment()    // Fragment yang akan ditampilkan
                 )
             }
         }

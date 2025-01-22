@@ -1,7 +1,7 @@
 package com.example.bjbo.fragment
 
+import ExplorePostinganAdapter
 import Postingan
-import PostinganAdapter
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
@@ -22,7 +22,7 @@ import retrofit2.Response
 class ExplorePostinganFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var postinganAdapter: PostinganAdapter
+    private lateinit var explorePostinganAdapter: ExplorePostinganAdapter
     private val postinganList = mutableListOf<Postingan>()
 
     override fun onCreateView(
@@ -38,11 +38,14 @@ class ExplorePostinganFragment : Fragment() {
     private fun setupRecyclerView(view: View) {
         recyclerView = view.findViewById(R.id.recyclerViewExplore)
 
-        // Atur GridLayoutManager dengan 4 kolom
+        // Atur GridLayoutManager dengan 2 kolom
         recyclerView.layoutManager = GridLayoutManager(context, 2)
 
+        // Inisialisasi ExplorePostinganAdapter
+        explorePostinganAdapter = ExplorePostinganAdapter(requireContext(), postinganList)
 
-        recyclerView.adapter = postinganAdapter
+        // Set adapter ke RecyclerView
+        recyclerView.adapter = explorePostinganAdapter
     }
 
     private fun loadAllPostinganData() {
@@ -91,7 +94,7 @@ class ExplorePostinganFragment : Fragment() {
         }
 
         postinganList.addAll(approvedPostingan)
-        postinganAdapter.notifyDataSetChanged()
+        explorePostinganAdapter.notifyDataSetChanged()
 
         // Log jumlah postingan yang ditampilkan
         Log.d("Postingan Update", "Total approved postingan: ${approvedPostingan.size}")
