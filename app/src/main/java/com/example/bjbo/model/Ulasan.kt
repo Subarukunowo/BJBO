@@ -28,20 +28,8 @@ data class Ulasan(
 // Model untuk data postingan terkait ulasan
 data class Postingan(
     val id: Int,
-    val name: String,
-    val status: String,
-    val category: String,
-    val description: String,
-    var image: String?,
-    val lokasi: String,
-    val user_id: Int,
-    val username: String,
-    val created_at: String,
-    val price: Int,
-    val updated_at: String
-) {
-
-}
+    val name: String
+)
 
 // Model untuk permintaan penyimpanan atau pembaruan ulasan
 data class UlasanRequest(

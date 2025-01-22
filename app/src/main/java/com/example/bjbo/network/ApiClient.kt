@@ -9,8 +9,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ApiClient {
 
     private const val BASE_URL = "http://192.168.104.127:8000/api/"
-    private const val IMAGE_URL = "http://192.168.237.127:8000/images/"
-    const val PEMBAYARAN_URL = "http://192.168.237.127:8000/api/orders"
+    private const val IMAGE_URL = "http://192.168.104.127:8000/images/"
+    const val PEMBAYARAN_URL = "http://192.168.104.127:8000/api/orders"
 
     // Konfigurasi HttpLoggingInterceptor untuk debugging HTTP request/response
     private val loggingInterceptor = HttpLoggingInterceptor().apply {

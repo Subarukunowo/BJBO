@@ -22,6 +22,18 @@ class UlasanActivity : AppCompatActivity() {
         binding = ActivityUlasanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Ambil postingan_id dari Intent
+        val postinganId = intent.getIntExtra("postingan_id", -1)
+        if (postinganId == -1) {
+            showToast("ID postingan tidak valid.")
+            finish()
+            return
+        }
+
+        // Simpan postingan_id ke SharedPreferences untuk digunakan saat submit
+        SharedPreferencesHelper.savePostinganId(this, postinganId)
+
+        // Setup UI dan event handler lainnya
         val ratingBar = binding.rbUserRating
         val reviewEditText = binding.etUserReview
         val sendButton = binding.btnSendReview
@@ -30,7 +42,6 @@ class UlasanActivity : AppCompatActivity() {
             val rating = ratingBar.rating.toInt()
             val komentar = reviewEditText.text.toString()
 
-            // Validasi input pengguna
             if (rating == 0) {
                 showToast("Silakan beri rating!")
                 return@setOnClickListener
@@ -45,6 +56,7 @@ class UlasanActivity : AppCompatActivity() {
             submitReview(rating, komentar)
         }
     }
+
 
     private fun submitReview(rating: Int, komentar: String) {
         // Ambil data user_id dan postingan_id dari SharedPreferences

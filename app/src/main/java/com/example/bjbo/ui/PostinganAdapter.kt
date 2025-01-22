@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.bjbo.R
 import com.example.bjbo.DetailPostinganActivity
 import com.example.bjbo.database.SharedPreferencesHelper
@@ -48,12 +49,18 @@ class PostinganAdapter(
         // Set lokasi
         holder.locationTextView.text = postingan.lokasi
 
-        // Memuat gambar menggunakan Glide
         Glide.with(context)
             .load(postingan.image)
-            .placeholder(R.drawable.baseline_image_24)
-            .error(R.drawable.baseline_broken_image_24)
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.baseline_image_24) // Placeholder untuk loading gambar
+                    .error(R.drawable.baseline_broken_image_24) // Gambar default jika terjadi error
+                    .centerCrop()
+            )
             .into(holder.imageView)
+
+        Log.d("PostinganAdapter", "Memuat gambar: ${postingan.image}")
+
 
         // Navigasi ke DetailPostinganActivity saat item diklik
         holder.itemView.setOnClickListener {

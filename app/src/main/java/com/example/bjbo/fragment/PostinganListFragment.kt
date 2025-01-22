@@ -29,7 +29,8 @@ class PostinganListFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recyclerView)
 
         // LinearLayoutManager horizontal
-        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        recyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
         postinganAdapter = PostinganAdapter(requireContext(), postinganList)
         recyclerView.adapter = postinganAdapter
@@ -51,7 +52,10 @@ class PostinganListFragment : Fragment() {
     }
 
     private fun loadPostinganData() {
-        Log.d("API Request", "Fetching data from: ${ApiClient.instance.getAllPostingan().request().url}")
+        Log.d(
+            "API Request",
+            "Fetching data from: ${ApiClient.instance.getAllPostingan().request().url}"
+        )
 
         ApiClient.instance.getAllPostingan()
             .enqueue(object : Callback<ApiResponse<List<Postingan>>> {
@@ -65,10 +69,12 @@ class PostinganListFragment : Fragment() {
                         if (apiResponse != null && apiResponse.success) {
                             postinganList.clear()
 
-                            // Filter hanya postingan dengan status 'disetujui'
-                            val filteredData = apiResponse.data.orEmpty().filter { it.status == "disetujui" }
+                            // Filter hanya postingan dengan status 'disetujui' dan urutkan berdasarkan created_at paling baru
+                            val filteredData = apiResponse.data.orEmpty()
+                                .filter { it.status == "disetujui" }
+                                .sortedByDescending { it.created_at } // Urutkan berdasarkan created_at terbaru
 
-                            // Batasi hanya 5 elemen pertama setelah filter
+                            // Batasi hanya 5 elemen pertama setelah filter dan sorting
                             val limitedData = filteredData.take(5)
 
                             // Update image URL untuk setiap postingan
@@ -80,16 +86,25 @@ class PostinganListFragment : Fragment() {
                             postinganList.addAll(limitedData)
                             postinganAdapter.notifyDataSetChanged()
                         } else {
-                            Toast.makeText(requireContext(), "Data tidak ditemukan", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                "Data tidak ditemukan",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     } else {
-                        Toast.makeText(requireContext(), "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Error: ${response.code()}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         Log.e("API Error", "Error: ${response.code()} ${response.message()}")
                     }
                 }
 
                 override fun onFailure(call: Call<ApiResponse<List<Postingan>>>, t: Throwable) {
-                    Toast.makeText(requireContext(), "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Failure: ${t.message}", Toast.LENGTH_SHORT)
+                        .show()
                     Log.e("API Error", "Failure: ${t.message}")
                 }
             })

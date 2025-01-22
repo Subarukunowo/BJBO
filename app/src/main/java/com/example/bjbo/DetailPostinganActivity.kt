@@ -68,7 +68,7 @@ class DetailPostinganActivity : AppCompatActivity() {
 
 
     binding.etUserReview.setOnClickListener {
-            navigateToUlasanActivity()
+            navigateToUlasanActivity(postinganId)
         }
 
 
@@ -205,8 +205,11 @@ class DetailPostinganActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun navigateToUlasanActivity() {
-        val intent = Intent(this, UlasanActivity::class.java)
+    private fun navigateToUlasanActivity(postinganId: Int) {
+        val intent = Intent(this, UlasanActivity::class.java).apply {
+            putExtra("postingan_id", postinganId)
+        }
         startActivity(intent)
     }
+
 }
